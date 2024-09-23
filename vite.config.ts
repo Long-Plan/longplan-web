@@ -4,7 +4,7 @@ import { load } from "dotenv-extended";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 function loadEnv(mode: string) {
-	const m = mode === "development" ? "dev" : "prod";
+	const m = mode === "development" ? "local" : mode;
 	const loadedEnv = load({
 		path: `env/.env.${m}`,
 		schema: "env/.env.schema",
