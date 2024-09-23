@@ -17,7 +17,7 @@ function loadEnv(mode: string) {
 
 // https://vitejs.dev/config/
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(({ mode }) => {
 	const isDevelopmentMode = mode === "development";
 
 	loadEnv(mode);

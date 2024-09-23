@@ -26,3 +26,5 @@ dist-ssr
 env/.env.local
 env/.env.dev
 env/.env.prod
+
+tsconfig.*.tsbuildinfo

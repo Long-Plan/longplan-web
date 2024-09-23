@@ -30,8 +30,8 @@ jobs:
             docker rm \$(docker ps -aqf "name=${{ env.APP_NAME }}") -f || true
             docker rmi \$(docker images -aqf "reference=${{ env.APP_NAME }}") || true
             docker build --platform linux/amd64 -t ${{ env.APP_NAME }} /home/longplan/frontend/main/
-            docker run -d --restart unless-stopped --name ${{ env.APP_NAME }} ${{ env.APP_NAME }}
-            find /home/longplan/frontend/main/ -mindepth 1 ! -path "/home/longplan/frontend/main/env/*" -delete
+            docker run -d -p 3000:80 --restart unless-stopped --name ${{ env.APP_NAME }} ${{ env.APP_NAME }}
+            find /home/longplan/frontend/main/ -mindepth 1 ! -path "/home/longplan/frontend/main/env*" -exec rm -rf {} +
           EOF
 
     env:
@@ -56,9 +56,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << EOF
             docker rm \$(docker ps -aqf "name=${{ env.APP_NAME }}") -f || true
             docker rmi \$(docker images -aqf "reference=${{ env.APP_NAME }}") || true
-            docker build --platform linux/amd64 -f dev.dockerfile -t ${{ env.APP_NAME }} /home/longplan/frontend/develop/
-            docker run -d --restart unless-stopped --name ${{ env.APP_NAME }} ${{ env.APP_NAME }}
-            find /home/longplan/frontend/develop/ -mindepth 1 ! -path "/home/longplan/frontend/develop/env/*" -delete
+            docker build --platform linux/amd64 -f /home/longplan/frontend/develop/dev.dockerfile -t ${{ env.APP_NAME }} /home/longplan/frontend/develop/
+            docker run -d -p 8080:80 --restart unless-stopped --name ${{ env.APP_NAME }} ${{ env.APP_NAME }}
+            find /home/longplan/frontend/develop/ -mindepth 1 ! -path "/home/longplan/frontend/develop/env*" -exec rm -rf {} +
           EOF
 
     env:
