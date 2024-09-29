@@ -1,23 +1,46 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import { Toaster } from "react-hot-toast";
 import { useQuery } from "react-query";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import useAccountContext from "./common/contexts/AccountContext";
 import { validateLocalToken } from "./core/auth";
 import { ClientRouteKey } from "./common/constants/keys";
 import { routes } from "./core/routes";
-import PageLayout from "./common/components/layout/PageLayout";
+import PageLayout from "./common/components/layouts/PageLayout";
+import Announcement from "./common/components/dialogues/Announcement";
+import useAnnouncementContext from "./common/contexts/AnnouncementContext";
+import { useEffect } from "react";
+import Term from "./common/components/dialogues/contents/Term";
 
 function App() {
   const navigate = useNavigate();
-  const { setAccountData } = useAccountContext();
+  const location = useLocation();
+  const { setAccountData, accountData } = useAccountContext();
+  const { isVisible, setIsVisible, setComponent } = useAnnouncementContext();
+
+  useEffect(() => {
+    if (accountData) {
+      if (!accountData.studentData?.is_term_accepted) {
+        setIsVisible(true);
+        setComponent(<Term />);
+      }
+    }
+  }, [accountData, isVisible, setComponent, setIsVisible]);
+
   const { status } = useQuery("init", initData, {
     staleTime: Infinity,
     onSuccess: (data) => {
       if (data) {
         setAccountData(data);
-        if (window.location.pathname !== ClientRouteKey.Home) {
-          navigate(ClientRouteKey.Home, { replace: true });
+      } else {
+        if (location.pathname !== ClientRouteKey.OAuth) {
+          navigate(ClientRouteKey.Login, { replace: true });
         }
       }
     },
@@ -32,6 +55,7 @@ function App() {
   return (
     <>
       <Toaster />
+      {isVisible && <Announcement />}
       <ReactFlowProvider>
         {status === "loading" ? null : status === "success" ? (
           <Routes>

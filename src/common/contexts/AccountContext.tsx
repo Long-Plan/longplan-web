@@ -1,6 +1,6 @@
 import { Nullable } from "tsdef";
 import { create } from "zustand";
-import { Account } from "../../types/auth";
+import { Account } from "../../types";
 
 type AccountStore = {
   accountData: Nullable<Account>;

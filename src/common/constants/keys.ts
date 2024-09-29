@@ -5,6 +5,7 @@ export const enum LocalStorageKey {
 export const enum ApiRouteKey {
   SignIn = "/oauth",
   Me = "/oauth/me",
+  Student = "/students",
 }
 
 export const enum ClientRouteKey {

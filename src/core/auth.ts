@@ -1,4 +1,5 @@
 import { getUserDataQuery } from "../common/apis/auth/queries";
+import { getDataOrNull } from "../common/apis/selectors";
 import { LocalStorageKey } from "../common/constants/keys";
 import { coreApi } from "./connections";
 
@@ -12,7 +13,7 @@ export async function validateLocalToken() {
 
     coreApi.defaults.headers.common["Authorization"] = `Bearer ${auth}`;
 
-    const data = await getUserDataQuery();
+    const data = await getDataOrNull(getUserDataQuery);
 
     return data;
   } catch {

@@ -1,8 +1,8 @@
 import { coreApi } from "../../../core/connections";
-import { Account } from "../../../types/auth";
+import { TResponse, Account } from "../../../types";
 import { ApiRouteKey } from "../../constants/keys";
 
-export function signInQuery(code: string): Promise<string> {
+export function signInQuery(code: string): Promise<TResponse<string>> {
   return new Promise((resolve, reject) => {
     coreApi
       .post(
@@ -28,7 +28,7 @@ export function signInQuery(code: string): Promise<string> {
   });
 }
 
-export function getUserDataQuery(): Promise<Account> {
+export function getUserDataQuery(): Promise<TResponse<Account>> {
   return new Promise((resolve, reject) => {
     coreApi
       .get(ApiRouteKey.Me)

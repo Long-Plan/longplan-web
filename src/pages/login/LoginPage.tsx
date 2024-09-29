@@ -3,8 +3,20 @@ import { Worker, Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { config } from "../../core/config";
+import { useEffect } from "react";
+import { ClientRouteKey } from "../../common/constants/keys";
+import useAccountContext from "../../common/contexts/AccountContext";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const { accountData } = useAccountContext();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (accountData) {
+      navigate(ClientRouteKey.Home, { replace: true });
+      return;
+    }
+  }, [accountData, navigate]);
   return (
     <>
       <div
