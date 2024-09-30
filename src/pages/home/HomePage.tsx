@@ -1,6 +1,9 @@
 function HomePage() {
- 
-  return <div>HomePage</div>;
+  return (
+    <div className="w-screen h-screen items-center justify-center text-center">
+      HomePage
+    </div>
+  );
 }
 
 export default HomePage;

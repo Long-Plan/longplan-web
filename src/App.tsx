@@ -11,12 +11,14 @@ import {
 import useAccountContext from "./common/contexts/AccountContext";
 import { validateLocalToken } from "./core/auth";
 import { ClientRouteKey } from "./common/constants/keys";
-import { routes } from "./core/routes";
+import routes from "./core/routes";
 import PageLayout from "./common/components/layouts/PageLayout";
 import Announcement from "./common/components/dialogues/Announcement";
 import useAnnouncementContext from "./common/contexts/AnnouncementContext";
 import { useEffect } from "react";
 import Term from "./common/components/dialogues/contents/Term";
+import FixedLayer from "./common/components/layer/fixlayer";
+import DebugPanel from "./debug/DebugPanel";
 
 function App() {
   const navigate = useNavigate();
@@ -56,6 +58,9 @@ function App() {
     <>
       <Toaster />
       {isVisible && <Announcement />}
+      <FixedLayer>
+        <DebugPanel isDisplayed={true} routes={routes} />
+      </FixedLayer>
       <ReactFlowProvider>
         {status === "loading" ? null : status === "success" ? (
           <Routes>

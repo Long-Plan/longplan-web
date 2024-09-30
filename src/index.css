@@ -19,46 +19,46 @@
   --blue-shadeb6: rgba(54, 65, 163, 1);
   --blue-shadeb7: rgba(40, 49, 122, 1);
   --box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
-  ---active-citizen-r: rgba(188, 32, 32, 1);
-  ---active-citizen-r-sl: rgba(237, 220, 220, 1);
-  ---active-citizen-r2: rgba(191, 80, 77, 1);
-  ---b-sl: rgba(231, 234, 255, 1);
-  ---black-shade-bl2: rgba(139, 140, 141, 1);
-  ---black-shade-bl4: rgba(80, 81, 82, 1);
-  ---black-shade-bl5: rgba(50, 51, 52, 1);
-  ---black-shade-bl6: rgba(40, 41, 42, 1);
-  ---black-sl: rgba(235, 234, 234, 1);
-  ---co-creator-or: rgba(246, 127, 76, 1);
-  ---co-creator-or1: rgba(229, 102, 47, 1);
-  ---co-creator-orbg: rgba(255, 235, 227, 1);
-  ---color: rgba(255, 255, 255, 1);
-  ---core-sk1: rgba(34, 145, 207, 1);
-  ---core-sk2: rgba(59, 163, 238, 1);
-  ---core-skybg: rgba(229, 244, 253, 1);
-  ---electives-brown: rgba(163, 115, 88, 1);
-  ---electives-brown-sl: rgba(245, 230, 222, 1);
-  ---electives-brown1: rgba(137, 73, 37, 1);
-  ---gr9: rgba(105, 102, 101, 1);
-  ---r-sl2: rgba(249, 227, 227, 1);
-  ---rbg: rgba(191, 80, 77, 0.15);
-  ---white-shade-w10: rgba(93, 93, 106, 1);
-  ---white-shade-w5: rgba(247, 247, 248, 1);
-  ---white-shade-w6: rgba(216, 216, 220, 1);
-  ---white-shade-w7: rgba(185, 185, 191, 1);
-  ---white-shade-w8: rgba(155, 155, 163, 1);
-  ---white-shade-w9: rgba(124, 124, 134, 1);
-  ---ybg: rgba(254, 248, 231, 1);
-  ---yellow-shade-y0-5: rgba(254, 251, 239, 1);
-  ---yellow-shade-y1: rgba(254, 246, 223, 1);
-  ---yellow-shade-y10: rgba(45, 34, 2, 1);
-  ---yellow-shade-y2: rgba(253, 237, 190, 1);
-  ---yellow-shade-y3: rgba(251, 229, 158, 1);
-  ---yellow-shade-y5: rgba(249, 211, 93, 1);
-  ---yellow-shade-y5-5: rgb(240, 195, 47);
-  ---yellow-shade-y6: rgba(208, 176, 75, 1);
-  ---yellow-shade-y7: rgb(184, 149, 43);
-  ---yellow-shade-y8: rgba(127, 105, 38, 1);
-  ---yellow-shade-ybg: rgba(255, 248, 226, 1);
+  --collection-1-active-citizen-r: rgba(188, 32, 32, 1);
+  --collection-1-active-citizen-r-sl: rgba(237, 220, 220, 1);
+  --collection-1-active-citizen-r2: rgba(191, 80, 77, 1);
+  --collection-1-b-sl: rgba(231, 234, 255, 1);
+  --collection-1-black-shade-bl2: rgba(139, 140, 141, 1);
+  --collection-1-black-shade-bl4: rgba(80, 81, 82, 1);
+  --collection-1-black-shade-bl5: rgba(50, 51, 52, 1);
+  --collection-1-black-shade-bl6: rgba(40, 41, 42, 1);
+  --collection-1-black-sl: rgba(235, 234, 234, 1);
+  --collection-1-co-creator-or: rgba(246, 127, 76, 1);
+  --collection-1-co-creator-or1: rgba(229, 102, 47, 1);
+  --collection-1-co-creator-orbg: rgba(255, 235, 227, 1);
+  --collection-1-color: rgba(255, 255, 255, 1);
+  --collection-1-core-sk1: rgba(34, 145, 207, 1);
+  --collection-1-core-sk2: rgba(59, 163, 238, 1);
+  --collection-1-core-skybg: rgba(229, 244, 253, 1);
+  --collection-1-electives-brown: rgba(163, 115, 88, 1);
+  --collection-1-electives-brown-sl: rgba(245, 230, 222, 1);
+  --collection-1-electives-brown1: rgba(137, 73, 37, 1);
+  --collection-1-gr9: rgba(105, 102, 101, 1);
+  --collection-1-r-sl2: rgba(249, 227, 227, 1);
+  --collection-1-rbg: rgba(191, 80, 77, 0.15);
+  --collection-1-white-shade-w10: rgba(93, 93, 106, 1);
+  --collection-1-white-shade-w5: rgba(247, 247, 248, 1);
+  --collection-1-white-shade-w6: rgba(216, 216, 220, 1);
+  --collection-1-white-shade-w7: rgba(185, 185, 191, 1);
+  --collection-1-white-shade-w8: rgba(155, 155, 163, 1);
+  --collection-1-white-shade-w9: rgba(124, 124, 134, 1);
+  --collection-1-ybg: rgba(254, 248, 231, 1);
+  --collection-1-yellow-shade-y0-5: rgba(254, 251, 239, 1);
+  --collection-1-yellow-shade-y1: rgba(254, 246, 223, 1);
+  --collection-1-yellow-shade-y10: rgba(45, 34, 2, 1);
+  --collection-1-yellow-shade-y2: rgba(253, 237, 190, 1);
+  --collection-1-yellow-shade-y3: rgba(251, 229, 158, 1);
+  --collection-1-yellow-shade-y5: rgba(249, 211, 93, 1);
+  --collection-1-yellow-shade-y5-5: rgb(240, 195, 47);
+  --collection-1-yellow-shade-y6: rgba(208, 176, 75, 1);
+  --collection-1-yellow-shade-y7: rgb(184, 149, 43);
+  --collection-1-yellow-shade-y8: rgba(127, 105, 38, 1);
+  --collection-1-yellow-shade-ybg: rgba(255, 248, 226, 1);
   --gray-shadegr05: rgba(251, 251, 251, 1);
   --gray-shadegr10: rgba(76, 73, 73, 1);
   --gray-shadegr3: rgba(234, 232, 231, 1);
@@ -145,7 +145,7 @@ h1 {
   font-weight: var(--h1-font-weight);
   letter-spacing: var(--h1-letter-spacing);
   line-height: var(--h1-line-height);
-  color: var(---black-shade-bl5);
+  color: var(--collection-1-black-shade-bl5);
 }
 
 h2 {
@@ -155,7 +155,7 @@ h2 {
   font-weight: var(--h2-font-weight);
   letter-spacing: var(--h2-letter-spacing);
   line-height: var(--h2-line-height);
-  color: var(---black-shade-bl5);
+  color: var(--collection-1-black-shade-bl5);
 }
 
 h3 {
@@ -164,7 +164,7 @@ h3 {
   font-weight: var(--h3-font-weight);
   letter-spacing: var(--h3-letter-spacing);
   line-height: var(--h3-line-height);
-  color: var(---black-shade-bl5);
+  color: var(--collection-1-black-shade-bl5);
 }
 
 h4 {
@@ -173,7 +173,7 @@ h4 {
   font-weight: var(--h4-font-weight);
   letter-spacing: var(--h4-letter-spacing);
   line-height: var(--h4-line-height);
-  color: var(---black-shade-bl5);
+  color: var(--collection-1-black-shade-bl5);
 }
 
 h5 {
@@ -182,7 +182,7 @@ h5 {
   font-weight: var(--h5-font-weight);
   letter-spacing: var(--h5-letter-spacing);
   line-height: var(--h5-line-height);
-  color: var(---black-shade-bl5);
+  color: var(--collection-1-black-shade-bl5);
 }
 
 h6 {
@@ -192,7 +192,7 @@ h6 {
   font-weight: var(--h6-font-weight);
   letter-spacing: var(--h6-letter-spacing);
   line-height: var(--h6-line-height);
-  color: var(---black-shade-bl5);
+  color: var(--collection-1-black-shade-bl5);
 }
 
 h7 {
@@ -202,7 +202,7 @@ h7 {
   font-weight: var(--h7-font-weight);
   letter-spacing: var(--h7-letter-spacing);
   line-height: var(--h7-line-height);
-  color: var(---black-shade-bl5);
+  color: var(--collection-1-black-shade-bl5);
 }
 
 button {
