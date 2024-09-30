@@ -138,6 +138,11 @@ h7 {
   font-family: "IBM Plex Sans Thai", sans-serif;
 }
 
+p,
+span {
+  font-family: "IBM Plex Sans Thai", sans-serif;
+}
+
 h1 {
   font-family: "IBM Plex Sans Thai", sans-serif;
   font-size: var(--h1-font-size);

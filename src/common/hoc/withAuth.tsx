@@ -1,10 +1,10 @@
 import React from "react";
 
-import { AuthKey } from "../../constants/keys";
-import Unauth from "../middleware/unauth";
+import { AuthKey } from "../constants/keys";
+import Unauth from "../components/middleware/unauth";
 import { useLoadingContext } from "react-router-loading";
-import useAccountContext from "../../contexts/AccountContext";
-import Navbar from "../Navbar/Navbar";
+import useAccountContext from "../contexts/AccountContext";
+import Navbar from "../components/Navbar/Navbar";
 
 function withAuth(authType: AuthKey) {
   return <P extends object>(WrappedComponent: React.ComponentType<P>) => {

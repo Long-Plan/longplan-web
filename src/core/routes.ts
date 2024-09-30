@@ -2,7 +2,7 @@ import { ClientRouteKey, AuthKey } from "../common/constants/keys";
 import HomePage from "../pages/home/HomePage";
 import LoginPage from "../pages/login/LoginPage";
 import OAuthPage from "../pages/oauth/OAuthPage";
-import withAuth from "../common/components/hoc/withAuth";
+import withAuth from "../common/hoc/withAuth";
 
 type Route = {
   path: string;
