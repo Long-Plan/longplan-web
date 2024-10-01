@@ -1,11 +1,14 @@
 export interface CourseDetails {
-  code: string;
-  name: string;
-  credits: number;
-  category: string;
-  recommendedYear: string;
-  prerequisites?: string[]; // Make prerequisites optional in case it's missing
-  corequisite?: string; // Make corequisite optional as well
+  course_no: string;
+  title_long_th: string;
+  title_long_en: string;
+  course_desc_th: string;
+  course_desc_en: string;
+  credit: number;
+  category?: string;
+  recommendedYear?: string;
+  recommendedSemester?: string;
+  prerequisites: string;
 }
 
 interface CourseDetailsPopupProps {
@@ -43,21 +46,25 @@ export default function CourseDetailsPopup({
         </h2>
         <div className="space-y-2 text-start text-black">
           <p>
-            <strong>รหัสวิชา:</strong> {courseDetails.code}
+            <strong>รหัสวิชา:</strong> {courseDetails.course_no}
           </p>
           <p>
-            <strong>ชื่อวิชา:</strong> {courseDetails.name}
+            <strong>ชื่อวิชา (TH) :</strong> {courseDetails.title_long_th}
           </p>
           <p>
-            <strong>หน่วยกิต:</strong> {courseDetails.credits}
+            <strong>ชื่อวิชา (EN) :</strong> {courseDetails.title_long_en}
+          </p>
+          <p>
+            <strong>หน่วยกิต:</strong> {courseDetails.credit}
           </p>
           <p>
             <strong>หมวดหมู่:</strong>{" "}
             <span className="text-blue-shadeb5">{courseDetails.category}</span>
           </p>
           <p>
-            <strong>ปีและภาคเรียนที่แนะนำ:</strong>{" "}
-            {courseDetails.recommendedYear}
+            <strong>ปีและภาคเรียนที่แนะนำ:</strong> {"ปี  "}
+            {courseDetails.recommendedYear} {"ภาคเรียนที่  "}
+            {courseDetails.recommendedSemester}
           </p>
         </div>
 
@@ -71,32 +78,14 @@ export default function CourseDetailsPopup({
           {courseDetails.prerequisites &&
           courseDetails.prerequisites.length > 0 ? (
             <ul className="list-disc ml-5">
-              {courseDetails.prerequisites.map((prerequisite, index) => (
-                <li key={index} className="text-blue-shadeb5">
-                  {prerequisite}
-                </li>
-              ))}
+              <li className="text-blue-shadeb5">
+                {courseDetails.prerequisites}
+              </li>
             </ul>
           ) : (
             <p className="font-semibold text-gray-400">
               ไม่มีวิชาที่ต้องผ่านก่อน
             </p> // If no prerequisites
-          )}
-        </div>
-
-        {/* Corequisite Section */}
-        <h3 className="font-semibold my-4 text-start">
-          วิชาที่ต้องเรียนคู่กัน (Co-requisite)
-        </h3>
-        <div className="space-y-2 text-start">
-          {courseDetails.corequisite ? (
-            <ul className="list-disc ml-5">
-              <li className="text-blue-shadeb5">{courseDetails.corequisite}</li>
-            </ul>
-          ) : (
-            <p className="font-semibold text-gray-400">
-              ไม่มีวิชาที่ต้องเรียนคู่กัน
-            </p> // If no corequisite
           )}
         </div>
       </div>

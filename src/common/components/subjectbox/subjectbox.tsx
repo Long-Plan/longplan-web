@@ -1,14 +1,10 @@
 import React from "react";
 import HoverableBoxComponent, { HoverableBoxProps } from "./hoverbox";
 
-interface SubjectBoxProps {
-  data: HoverableBoxProps;
-}
-
-const SubjectBox: React.FC<SubjectBoxProps> = ({ data }) => {
+const SubjectBox: React.FC<HoverableBoxProps> = (props) => {
   return (
     <div>
-      <HoverableBoxComponent {...data} />
+      <HoverableBoxComponent {...props} />
     </div>
   );
 };
