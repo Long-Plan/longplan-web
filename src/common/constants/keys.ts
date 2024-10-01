@@ -11,6 +11,7 @@ export const enum ApiRouteKey {
 
 export const enum ClientRouteKey {
   Home = "/",
+  Profile = "/profile",
   Login = "/login",
   OAuth = "/cmuOAuthCallback",
 }

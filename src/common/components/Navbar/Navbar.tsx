@@ -53,7 +53,11 @@ const Navbar: React.FC<NavbarProps> = () => {
       aria-label="Main Navigation"
     >
       <ul className="navbar-nav">
-        {renderNavItem("/home", "/imgs/Home.svg", "/imgs/Home_p.svg")}
+        {renderNavItem(
+          ClientRouteKey.Home,
+          "/imgs/Home.svg",
+          "/imgs/Home_p.svg"
+        )}
         <hr className="bg-gray-100 opacity-100 mt-4" />
         {renderNavItem(
           "/create",
@@ -62,7 +66,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           "Plan"
         )}
         {renderNavItem(
-          "/user",
+          ClientRouteKey.Profile,
           "/imgs/Profile.svg",
           "/imgs/Profile_p.svg",
           "Profile"

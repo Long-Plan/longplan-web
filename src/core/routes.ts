@@ -3,6 +3,7 @@ import HomePage from "../pages/home/HomePage";
 import LoginPage from "../pages/login/LoginPage";
 import OAuthPage from "../pages/oauth/OAuthPage";
 import withAuth from "../common/hoc/withAuth";
+import UserPage from "../pages/user/UserProfilePage";
 
 type Route = {
   path: string;
@@ -20,6 +21,10 @@ const routes: Route[] = [
   {
     path: ClientRouteKey.OAuth,
     component: OAuthPage,
+  },
+  {
+    path: ClientRouteKey.Profile,
+    component: withAuth(AuthKey.UserAuth)(UserPage),
   },
 ];
 
