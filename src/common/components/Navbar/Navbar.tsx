@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getLogout } from "../../apis/logout";
 import { ClientRouteKey, LocalStorageKey } from "../../constants/keys";
-import { UserIcon } from "@heroicons/react/20/solid";
+import { Cog6ToothIcon } from "@heroicons/react/20/solid";
 
 interface NavbarProps {
   // Add any props you need, like navigation links
@@ -60,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = () => {
         )}
         <hr className="bg-gray-100 opacity-100 mt-4" />
         {renderNavItem(
-          "/create",
+          ClientRouteKey.Plan,
           "/imgs/Create.svg",
           "/imgs/Create_p.svg",
           "Plan"
@@ -73,10 +73,10 @@ const Navbar: React.FC<NavbarProps> = () => {
         )}
         <li className="nav-item flex flex-col justify-center items-center text-center">
           <Link
-            to="/settings"
+            to={ClientRouteKey.ProfileSettings}
             className="flex flex-col items-center justify-center"
           >
-            <UserIcon className="w-10 h-10 transition-all duration-300 transform group hover:scale-125 hover:rotate-6" />
+            <Cog6ToothIcon className="w-10 h-10 transition-all duration-300 transform group hover:scale-125 hover:rotate-6" />
             <p className="text-[14px] mt-2">Setting</p>
           </Link>
         </li>

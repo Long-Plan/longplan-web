@@ -30,90 +30,87 @@ function Term() {
   };
 
   return (
-    <Container>
-      <Title>ข้อกำหนดและเงื่อนไขการให้บริการ (Terms of Service)</Title>
-      <Paragraph>
-        โปรดอ่านข้อกำหนดและเงื่อนไขการให้บริการเหล่านี้อย่างละเอียดก่อนใช้งาน
-      </Paragraph>
-      <Paragraph>
-        <strong>1. การยอมรับข้อกำหนด</strong>
-        <br />
-        โดยการเข้าใช้งาน LongPlan
-        คุณจำเป็นต้องยอมรับและตกลงที่จะปฏิบัติตามข้อกำหนดเหล่านี้
-        หากคุณไม่เห็นด้วยกับข้อกำหนดเหล่านี้ กรุณาอย่าใช้บริการของเรา
-      </Paragraph>
-      <Paragraph>
-        <strong>2. ขอบเขตของบริการ</strong>
-        <br />
-        LongPlan เป็น Web Application
-        ที่ช่วยในการวางแผนวิชาเรียนและตรวจสอบหน่วยกิต
-        รวมถึงการช่วยในการลงทะเบียนเรียนตลอดหลักสูตรจนจบการศึกษา
-      </Paragraph>
-      <Paragraph>
-        <strong>3. การใช้ข้อมูลส่วนบุคคล</strong>
-        <br />
-        ข้อมูลที่เราเก็บรวบรวมจากผู้ใช้ประกอบด้วย:
-        <ul>
-          <li>ข้อมูลประวัติการศึกษา เช่น ชื่อ นามสกุล คณะ รหัสนักศึกษา</li>
-          <li>ข้อมูลการลงทะเบียนเรียนและผลการเรียน</li>
-        </ul>
-        ข้อมูลดังกล่าวจะใช้เพื่อการให้บริการ LongPlan
-        และใช้ในการอนุญาตจากหน่วยงานที่เกี่ยวข้อง
-      </Paragraph>
-      <Paragraph>
-        <strong>4. ความเป็นส่วนตัว</strong>
-        <br />
-        เรารักษาความปลอดภัยของข้อมูลส่วนบุคคลของผู้ใช้และจะไม่แบ่งปันข้อมูลส่วนบุคคลกับบุคคลที่สามโดยไม่ได้รับอนุญาต
-      </Paragraph>
-      <Paragraph>
-        <strong>5. การปรับปรุงและการแก้ไข</strong>
-        <br />
-        เราสงวนสิทธิ์ในการปรับปรุงและแก้ไขข้อกำหนดเหล่านี้ได้ตลอดเวลา
-        โดยไม่ต้องแจ้งให้ทราบล่วงหน้า
-      </Paragraph>
-      <Paragraph>
-        <HighlightText>
-          ทั้งนี้
-          โปรดตรวจสอบความถูกต้องของข้อมูลรายวิชาและข้อมูลการลงทะเบียนอีกครั้ง
-          กับภาคสำนักทะเบียนหรืออาจารย์ที่ปรึกษา
-        </HighlightText>
-      </Paragraph>
-      <Paragraph>อัพเดทล่าสุด: 30/7/2567</Paragraph>
-      <CheckboxWrapper>
-        <Checkbox
-          type="checkbox"
-          checked={checked}
-          onChange={handleCheckboxChange}
-        />
-        <label>ข้าพเจ้ายอมรับข้อกำหนดและเงื่อนไขการให้บริการ</label>
-      </CheckboxWrapper>
-      <ConfirmButton onClick={handleConfirm} disabled={!checked}>
-        ยืนยัน
-      </ConfirmButton>
-    </Container>
+    <div className="fixed inset-0 flex items-center justify-center bg-gray bg-opacity-10">
+      <div className="bg-white p-8 rounded-[20px] shadow-2xl w-[850px] h-max">
+        <h2 className="text-2xl font-bold mb-6 text-center pt-2">
+          ข้อกำหนดและเงื่อนไขการให้บริการ (Terms of Service)
+        </h2>
+        <p className="text-md font-light mb-2 text-center">
+          โปรดอ่านข้อกำหนดและเงื่อนไขการให้บริการเหล่านี้อย่างละเอียดก่อนใช้งาน
+        </p>
+        <ol className="list-decimal list-inside text-sm mb-4">
+          <li className="font-semibold">การยอมรับข้อกำหนด</li>
+          <p className="py-4 font-light">
+            โดยการเข้าถึงและใช้บริการ LongPlan
+            คุณจำเป็นต้องยอมรับและตกลงที่จะปฏิบัติตามข้อกำหนดเหล่านี้
+            หากคุณไม่เห็นด้วยกับข้อกำหนดเหล่านี้ กรุณาอย่าใช้บริการของเรา
+          </p>
+          <li className="font-semibold">ขอบเขตของบริการ</li>
+          <p className="py-4 font-light">
+            LongPlan เป็น Web Application
+            ที่ช่วยนักศึกษาในการวางแผนวิชาเรียนและตรวจสอบหน่วยกิต
+            รวมถึงการช่วยในการลงทะเบียนเรียนตลอดหลักสูตรจนถึงจบการศึกษา
+          </p>
+          <li className="font-semibold">การใช้งานข้อมูลส่วนบุคคล</li>
+          <p className="py-2 font-light">
+            ข้อมูลที่เราเก็บรวบรวมจากผู้ใช้ประกอบด้วย:
+          </p>
+          <p className="ml-4">
+            <p className="font-light ">
+              3.1. ข้อมูลประวัติการศึกษาจาก CMU Oauth (เช่น ชื่อ นามสกุล
+              คณะที่ศึกษา รหัสนักศึกษา)
+            </p>
+            <p className="font-light">
+              3.2. ข้อมูลจากรายวิชาที่ลงทะเบียนและผลการเรียน{" "}
+            </p>
+          </p>
+          <p className="py-4 font-light">
+            ข้อมูลดังกล่าวใช้เพียงเพื่อให้บริการ LongPlan
+            และได้รับการอนุญาตจากหน่วยงานที่เกี่ยวข้อง
+          </p>
+          <li className="font-semibold">ความรับผิดชอบของผู้ใช้</li>
+          <p className="py-4 font-light">
+            เรารักษาความปลอดภัยของข้อมูลส่วนบุคคลของผู้ใช้และจะไม่แบ่งปันข้อมูลกับบุคคลที่สามโดยไม่ได้รับอนุญาต
+          </p>
+          <li className="font-semibold">ความเป็นส่วนตัว</li>
+          <p className="py-4 font-light">
+            เราขอสงวนสิทธิ์ในการปรับปรุงและแก้ไขข้อกำหนดเหล่านี้ได้ตลอดเวลา
+            โดยไม่ต้องแจ้งให้ทราบล่วงหน้า
+          </p>
+          <p className="text-red-500 my-4 font-semibold text-sm">
+            ทั้งนี้
+            โปรดตรวจสอบความถูกต้องของข้อมูลรายวิชาและข้อมูลการลงทะเบียนเรียนอีกครั้ง
+            กับทางสำนักทะเบียนหรืออาจารย์ที่ปรึกษา
+          </p>
+          <p className="flex justify-end font-light text-xs text-gray-400">
+            อัพเดทล่าสุด: 30/7/2567
+          </p>
+        </ol>
+        <div className="flex items-center my-8 justify-center font-semibold">
+          <CheckboxWrapper>
+            <Checkbox
+              type="checkbox"
+              checked={checked}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor="accept" className="text-base">
+              ข้าพเจ้ายอมรับข้อกำหนดและเงื่อนไขการให้บริการ
+            </label>
+          </CheckboxWrapper>
+        </div>
+        <ConfirmButton
+          className={"bg-blue-shadeb5 hover:bg-blue-shadeb6"}
+          onClick={handleConfirm}
+          disabled={!checked}
+        >
+          ยืนยัน
+        </ConfirmButton>
+      </div>
+    </div>
   );
 }
 
 export default Term;
-
-const Container = styled.div`
-  text-align: left;
-`;
-
-const Title = styled.h2`
-  text-align: center;
-  font-size: 1.5em;
-`;
-
-const Paragraph = styled.p`
-  font-size: 1em;
-  line-height: 1.5em;
-`;
-
-const HighlightText = styled.span`
-  color: red;
-  font-weight: bold;
-`;
 
 const CheckboxWrapper = styled.div`
   margin-top: 20px;
@@ -126,7 +123,6 @@ const Checkbox = styled.input`
 `;
 
 const ConfirmButton = styled.button`
-  background-color: #1a73e8;
   color: white;
   border: none;
   border-radius: 5px;

@@ -8,6 +8,7 @@ function HomePage() {
   return (
     <PageContainer>
       <ContainerWithoutHeader>
+        <h1 className="text-2xl font-bold text-center">Call SubjectBox</h1>
         <SubjectBox
           BoxComponent={CoCreBox}
           course_detail={{

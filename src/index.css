@@ -128,18 +128,7 @@ body {
   min-height: 100vh;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-h7 {
-  font-family: "IBM Plex Sans Thai", sans-serif;
-}
-
-p,
-span {
+* {
   font-family: "IBM Plex Sans Thai", sans-serif;
 }
 

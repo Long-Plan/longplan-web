@@ -440,7 +440,7 @@ const CategoryDetail: React.FC = () => {
           </>
         )}
       </div>
-      {/* <div>{renderCurriculaData()}</div> */}
+      <div>{renderCurriculaData()}</div>
     </div>
   );
 };
