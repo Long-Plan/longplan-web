@@ -7,6 +7,7 @@ import {
   getEnrolledCourses,
   EnrolledCourse,
 } from "../utils/enrolledCourse";
+import { Category, mapCategoriesToTypes } from "../utils/mappingCategory";
 
 const CourseInfo = () => {
   const { accountData } = useAccountContext();
@@ -16,30 +17,39 @@ const CourseInfo = () => {
   const [courseDetails, setCourseDetails] = useState<
     Record<string, CourseDetails>
   >({});
+  const [category, setCategory] = useState<
+    (Category & { type_name: string }) | null
+  >(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedYearSemester, setSelectedYearSemester] = useState<{
     year: string | null;
     semester: string | null;
-  }>({ year: "1", semester: "1" });
+  }>({
+    year: "1",
+    semester: "1",
+  });
 
   useEffect(() => {
-    const fetchEnrolledCourses = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getEnrolledCourses();
-        setEnrolledCourses(data.result);
-        setLoading(false);
+        const enrolledData = await getEnrolledCourses();
+        const categoryData = await mapCategoriesToTypes();
+        setEnrolledCourses(enrolledData.result);
+        setCategory(categoryData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred."
         );
+      } finally {
         setLoading(false);
       }
     };
-    fetchEnrolledCourses();
+
+    fetchData();
   }, []);
 
-  // Fetch course details for each course
+  // Fetch course details when enrolledCourses change
   useEffect(() => {
     if (enrolledCourses) {
       enrolledCourses.forEach((courseGroup) => {
@@ -56,14 +66,95 @@ const CourseInfo = () => {
     }
   }, [enrolledCourses, courseDetails]);
 
-  // Group courses by year and semester
+  const lookupTable: Record<string, string[]> = {
+    "Learner Person": ["Learner Person"],
+    "Innovative Co-creator": ["Innovative Co-creator"],
+    "Active Citizen": ["Active Citizen"],
+    "GE Elective": ["Elective from 3 Categories"],
+    Core: ["Core Courses"],
+    "Major Required": ["Required Courses"],
+    "Major Elective": ["Major Electives"],
+  };
+
+  const findGroupByCategoryName = (categoryName: string): string | null => {
+    for (const [groupType, keywords] of Object.entries(lookupTable)) {
+      if (keywords.some((keyword) => categoryName.includes(keyword))) {
+        return groupType;
+      }
+    }
+    return null;
+  };
+
+  interface CategoryWithParentAndGrandparent {
+    grandParent: Category | null;
+    parent: Category | null;
+    category: Category;
+  }
+
+  const findGroupByCourseNo = (
+    courseNo: string
+  ): CategoryWithParentAndGrandparent | null => {
+    if (!category) {
+      return null;
+    }
+
+    const findCategory = (
+      category: Category,
+      parent: Category | null = null,
+      grandParent: Category | null = null
+    ): CategoryWithParentAndGrandparent | undefined => {
+      if (category.courses?.includes(courseNo)) {
+        return { grandParent, parent, category };
+      }
+
+      if (category.child_categories) {
+        for (const childCategory of category.child_categories) {
+          const foundCategory = findCategory(
+            childCategory as Category,
+            category,
+            parent
+          );
+          if (foundCategory) {
+            return foundCategory;
+          }
+        }
+      }
+      return undefined;
+    };
+
+    return findCategory(category) || null;
+  };
+
+  const getLookupForCourse = (courseNo: string): string | null => {
+    const result = findGroupByCourseNo(courseNo);
+
+    if (result) {
+      const { category, parent, grandParent } = result;
+
+      const categoryGroup = findGroupByCategoryName(category.name_en);
+      if (categoryGroup) return categoryGroup;
+
+      if (parent) {
+        const parentGroup = findGroupByCategoryName(parent.name_en);
+        if (parentGroup) return parentGroup;
+      }
+
+      if (grandParent) {
+        const grandParentGroup = findGroupByCategoryName(grandParent.name_en);
+        if (grandParentGroup) return grandParentGroup;
+      }
+    }
+
+    return "Free Elective";
+  };
+
   const groupedByYear = useMemo(() => {
     const yearSemesterMap = new Map();
     enrolledCourses?.forEach((course) => {
       if (!yearSemesterMap.has(course.Year)) {
         yearSemesterMap.set(course.Year, new Set());
       }
-      yearSemesterMap.get(course.Year).add(course.Semester);
+      yearSemesterMap.get(course.Year)?.add(course.Semester);
     });
     return Array.from(yearSemesterMap.entries()).map(([year, semesters]) => ({
       year,
@@ -72,16 +163,39 @@ const CourseInfo = () => {
   }, [enrolledCourses]);
 
   const filteredCourses = useMemo(() => {
-    if (selectedYearSemester.year && selectedYearSemester.semester) {
-      return (
-        enrolledCourses?.filter(
-          (course) =>
-            course.Year === selectedYearSemester.year &&
-            course.Semester === selectedYearSemester.semester
-        ) || null
-      );
-    }
-    return enrolledCourses;
+    if (!enrolledCourses) return null;
+
+    const groupOrder: Record<string, number> = {
+      "Learner Person": 1,
+      "Innovative Co-creator": 2,
+      "Active Citizen": 3,
+      "GE Elective": 4,
+      Core: 5,
+      "Major Required": 6,
+      "Major Elective": 7,
+      "Free Elective": 8,
+    };
+
+    const getGroupRank = (courseNo: string): number => {
+      const group = getLookupForCourse(courseNo);
+      return group ? groupOrder[group] || 9 : 9; // Default rank if not found
+    };
+
+    const filtered = enrolledCourses?.filter(
+      (course) =>
+        course.Year === selectedYearSemester.year &&
+        course.Semester === selectedYearSemester.semester
+    );
+
+    // Sort the filtered courses by group rank
+    const sortedCourses = filtered?.map((courseGroup) => ({
+      ...courseGroup,
+      Courses: courseGroup.Courses.sort(
+        (a, b) => getGroupRank(a.CourseNo) - getGroupRank(b.CourseNo)
+      ),
+    }));
+
+    return sortedCourses;
   }, [enrolledCourses, selectedYearSemester]);
 
   const gradeToNumber = (grade: string): number => {
@@ -101,15 +215,13 @@ const CourseInfo = () => {
       case "D":
         return 1.0;
       case "F":
-        return 0.0;
       case "W":
-        return 0.0; // For withdrawn courses
+        return 0.0;
       default:
-        return 0.0; // Default to 0 for unknown grades
+        return 0.0;
     }
   };
 
-  // Calculate sum of credits for the selected year and semester
   const sumOfCredits = useMemo(() => {
     if (!filteredCourses?.length) return 0;
     return filteredCourses.reduce((total: number, course) => {
@@ -122,7 +234,6 @@ const CourseInfo = () => {
     }, 0);
   }, [filteredCourses]);
 
-  // Calculate the average grade based on the total grade-credit product and total credits
   const averageGrade = useMemo(() => {
     if (!filteredCourses?.length) return 0;
 
@@ -134,7 +245,6 @@ const CourseInfo = () => {
         const gradeValue = gradeToNumber(enrolledCourse.Grade);
         const credit = parseFloat(enrolledCourse.Credit);
 
-        // Include only valid grades and credits
         if (
           !isNaN(gradeValue) &&
           gradeValue > 0 &&
@@ -158,17 +268,13 @@ const CourseInfo = () => {
   );
 
   if (loading)
-    return (
-      <div className="items-center text-center justify-center text-xl p-10">
-        Loading courses
-      </div>
-    );
+    return <div className="text-center text-xl p-10">Loading courses...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="flex flex-row justify-center gap-8">
       <div className="flex flex-col my-4">
-        <div className="flex flex-col mt-6">
+        <div className="flex flex-col mt-6 ml-8  ">
           {groupedByYear.map(({ year, semesters }) => (
             <div key={year} className="flex flex-col">
               {semesters.map((semester) => (
@@ -181,16 +287,16 @@ const CourseInfo = () => {
                     selectedYearSemester.year === year &&
                     selectedYearSemester.semester === semester
                       ? "bg-blue-shadeb5 text-white"
-                      : "bg-white text-blue-shadeb5 transition duration-100 hover:bg-blue-shadeb05 hover:border-blue-shadeb2"
+                      : "bg-white text-blue-shadeb5 hover:bg-blue-shadeb05 hover:border-blue-shadeb2"
                   } border border-solid border-gray-400`}
                 >
-                  {"ภาคเรียนที่  " +
+                  {"ภาคเรียนที่ " +
                     semester +
                     "/" +
                     (Number(
                       accountData?.studentData?.code
                         ?.toString()
-                        .substring(0, 2) ?? "0"
+                        ?.substring(0, 2) ?? "0"
                     ) +
                       (Number(year) - 1))}
                 </button>
@@ -200,7 +306,7 @@ const CourseInfo = () => {
         </div>
       </div>
 
-      <div className="flex flex-row mt-10 top-0 ml-8">
+      <div className="flex flex-row mt-10">
         <table className="table-auto rounded-[20px] w-fit mr-8">
           <thead className="bg-blue-shadeb05 text-blue-shadeb5 text-md">
             <tr>
@@ -216,7 +322,7 @@ const CourseInfo = () => {
               <th className="border-b border-blue-shadeb05 w-[40px] px-4 py-2 text-center">
                 เกรด
               </th>
-              <th className="border-b border-blue-shadeb05 w-[200px] px-4 py-2 text-center rounded-tr-[18px]">
+              <th className="border-b border-blue-shadeb05 w-[300px] px-4 py-2 text-center rounded-tr-[18px]">
                 หมวดหมู่
               </th>
             </tr>
@@ -228,7 +334,7 @@ const CourseInfo = () => {
                   key={enrolledCourse.CourseNo}
                   className={`border-b border-gray-300 ${
                     index % 2 === 0 ? "bg-white" : "bg-gray-200"
-                  } transition duration-300 ease-in-out hover:bg-blue-shadeb1 bg-opacity-70 hover:scale-105 text-sm`}
+                  } hover:bg-blue-shadeb1 hover:scale-105 text-sm`}
                 >
                   <td className="px-4 py-2 text-center">
                     {enrolledCourse.CourseNo}
@@ -244,7 +350,49 @@ const CourseInfo = () => {
                     {enrolledCourse.Grade}
                   </td>
                   <td className="px-4 py-2 text-center">
-                    {courseDetails[enrolledCourse.CourseNo]?.category || "N/A"}
+                    {(() => {
+                      const courseGroup = getLookupForCourse(
+                        enrolledCourse.CourseNo
+                      );
+                      if (
+                        courseGroup === "Core" ||
+                        courseGroup === "Major Required" ||
+                        courseGroup === "Major Elective"
+                      ) {
+                        return (
+                          <>
+                            <div className="inline-block px-2 text-sm w-[50px] font-medium text-white bg-blue-shadeb4 rounded-l-[10px] border border-solid border-blue-shadeb4">
+                              Major
+                            </div>
+                            <div className="inline-block pl-2 w-[100px] text-left text-sm font-medium bg-blue-shadeb1 rounded-r-[10px] text-blue-shadeb5 border border-solid border-blue-shadeb5">
+                              {courseGroup.replace("Major ", "")}
+                            </div>
+                          </>
+                        );
+                      }
+                      if (
+                        courseGroup === "Learner Person" ||
+                        courseGroup === "Innovative Co-creator" ||
+                        courseGroup === "Active Citizen" ||
+                        courseGroup === "GE Elective"
+                      ) {
+                        return (
+                          <>
+                            <div className="inline-block px-2 text-sm w-[40px] font-medium text-yellow-700 bg-yellow-400 rounded-l-[10px] border border-solid border-yellow-300">
+                              GE
+                            </div>
+                            <div className="inline-block px-2 w-max text-left text-sm font-medium bg-yellow-50 rounded-r-[10px] text-yellow-700 border border-solid border-yellow-300">
+                              {courseGroup}
+                            </div>
+                          </>
+                        );
+                      }
+                      return (
+                        <div className="inline-block px-2 text-sm w-[150px] font-medium text-black bg-gray-200 rounded-[10px] border border-solid border-gray-400">
+                          {courseGroup}
+                        </div>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))}

@@ -5,11 +5,8 @@ import { ClientRouteKey } from "../../common/constants/keys";
 
 function CreatePage() {
   const loadingContext = useLoadingContext();
-
   const [isSetting, setIsSetting] = useState(false);
-
   const [showPopup, setShowPopup] = useState(false);
-
   const [plans, setPlans] = useState<Plan[]>([
     {
       id: 1,

@@ -1,4 +1,6 @@
+import { get } from "http";
 import React, { useEffect, useState } from "react";
+import { getEnrolledCourses } from "../utils/enrolledCourse";
 
 // Define your interfaces here (updated for the new API structure)
 interface ApiResponse {
@@ -161,15 +163,9 @@ const CategoryDetail: React.FC = () => {
         const categoryData: ApiResponse = await categoryResponse.json();
         setCategoryData(categoryData.result);
 
-        const enrollmentResponse = await fetch(
-          "http://10.10.182.135:8000/api/v1/enrolled-courses/640612093"
-        );
-        if (!enrollmentResponse.ok) {
-          throw new Error("Failed to fetch enrollment data");
-        }
-        const enrollmentData: EnrollmentApiResponse =
-          await enrollmentResponse.json();
-        setEnrollmentData(enrollmentData.result);
+        const enrollmentResponse = await getEnrolledCourses();
+
+        setEnrollmentData(enrollmentResponse.result);
 
         const coursesResponse = await fetch(
           "http://10.10.182.135:8000/api/v1/curricula/courses/1"
@@ -422,7 +418,7 @@ const CategoryDetail: React.FC = () => {
   }
 
   return (
-    <div className="bg-white p-4 rounded-[20px]">
+    <div className="bg-white p-16 rounded-[20px]">
       <h1>{categoryData.name_en}</h1>
       <p>Credits: {categoryData.credit}</p>
       <p>Note: {categoryData.note}</p>
