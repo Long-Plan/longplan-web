@@ -332,7 +332,7 @@ const CourseInfo = () => {
                 <tr
                   key={enrolledCourse.CourseNo}
                   className={`border-b border-gray-300 ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-200"
+                    index % 2 === 0 ? "bg-white" : "bg-gray-100"
                   } hover:bg-blue-shadeb1 hover:scale-105 text-sm duration-200 transition-all cursor-default`}
                 >
                   <td className="px-4 py-2 text-center">
