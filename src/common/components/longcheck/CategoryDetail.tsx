@@ -1,18 +1,11 @@
-import { get } from "http";
 import React, { useEffect, useState } from "react";
 import { getEnrolledCourses } from "../utils/enrolledCourse";
 
-// Define your interfaces here (updated for the new API structure)
+// Define your interfaces here
 interface ApiResponse {
   success: boolean;
   message: string;
   result: Category;
-}
-
-interface EnrollmentApiResponse {
-  success: boolean;
-  message: string;
-  result: EnrollmentData[];
 }
 
 interface CoursesApiResponse {
@@ -111,12 +104,12 @@ interface GroupDTO {
   id: number;
   name_th: string;
   name_en: string;
-  type_id: number; // from types API
-  total_credit: number; // from curricula API
-  earned_credit: number; // from enrolled-courses API
-  at_least: boolean; // from categories API
-  child?: GroupDTO[]; // recursive structure
-  courses?: Course[]; // from curricula API
+  type_id: number;
+  total_credit: number;
+  earned_credit: number;
+  at_least: boolean;
+  child?: GroupDTO[];
+  courses?: Course[];
 }
 
 interface CurriculaDTO {
@@ -124,8 +117,8 @@ interface CurriculaDTO {
   name_th: string;
   name_en: string;
   total_credit: number;
-  earned_credit: number; // Add earned_credit at the root level
-  type_id: number; // from categories API
+  earned_credit: number;
+  type_id: number;
   at_least: boolean;
   child: GroupDTO[];
 }
@@ -145,7 +138,6 @@ const CategoryDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [curriculaData, setCurriculaData] = useState<CurriculaDTO | null>(null);
 
-  // Mock user choices
   const userChoices: userQuestionChoices = {
     1: 1,
   };
@@ -164,7 +156,6 @@ const CategoryDetail: React.FC = () => {
         setCategoryData(categoryData.result);
 
         const enrollmentResponse = await getEnrolledCourses();
-
         setEnrollmentData(enrollmentResponse.result);
 
         const coursesResponse = await fetch(
@@ -260,58 +251,60 @@ const CategoryDetail: React.FC = () => {
       return category;
     }
 
-    // Store only child categories that match user choices
+    // Filter child categories based on user choices
     const filteredChildCategories: Category[] = [];
-
-    // Set to track added child category IDs to avoid duplicates
     const addedChildCategoryIds = new Set<number>();
 
     relationships.forEach((rel) => {
-      // Get user's choice for the specific question
+      // Check if there's a matching user choice for this question
       const userChoice = userChoices[rel.question_id!];
 
-      // Only add child categories that match the user's choice
+      // Only include child categories that match the user's choice
       if (userChoice === rel.choice_id) {
-        const childCategory = categoryData?.child_categories?.find(
+        const childCategory = category.child_categories?.find(
           (child) => child.id === rel.child_category_id
         );
 
-        // If the child category exists and hasn't been added yet, include it
+        // Add the child category if it hasn’t already been included
         if (childCategory && !addedChildCategoryIds.has(childCategory.id)) {
           filteredChildCategories.push(childCategory);
-          addedChildCategoryIds.add(childCategory.id); // Track added category
+          addedChildCategoryIds.add(childCategory.id);
         }
       }
     });
 
-    // If we found matching child categories, return them
-    if (filteredChildCategories.length > 0) {
-      return {
-        ...category,
-        child_categories: filteredChildCategories, // Replace with filtered child categories
-      };
-    }
-
-    // If no matching child categories were found, return the category as is
-    return category;
-  };
-  const getAllCategoryCourses = (): string[] => {
-    const allCourses: string[] = [];
-
-    const collectCourses = (category: Category) => {
-      if (category.courses) {
-        allCourses.push(...category.courses);
-      }
-      if (category.child_categories) {
-        category.child_categories.forEach(collectCourses);
-      }
+    // Return the updated category with filtered child categories
+    return {
+      ...category,
+      child_categories: filteredChildCategories.length
+        ? filteredChildCategories
+        : category.child_categories, // Keep original children if no filtering applied
     };
+  };
 
-    if (categoryData) {
-      collectCourses(categoryData);
-    }
+  const generateCurriculaDTO = (categoryData: Category): CurriculaDTO => {
+    const rootDTO = calculateCreditsForCategory(
+      processRelationships(categoryData) || categoryData
+    );
 
-    return allCourses;
+    const updatedChildCategories = rootDTO.child?.map((group) => {
+      if (
+        group.type_id ===
+        typesData?.find((type) => type.name_en === "Free Electives")?.id
+      ) {
+        const freeElectiveCredits = calculateFreeElectiveCredits();
+        return {
+          ...group,
+          earned_credit: freeElectiveCredits,
+        };
+      }
+      return group;
+    });
+
+    return {
+      ...rootDTO,
+      child: updatedChildCategories || [],
+    };
   };
 
   const calculateFreeElectiveCredits = (): number => {
@@ -337,70 +330,66 @@ const CategoryDetail: React.FC = () => {
     return freeElectiveCredits;
   };
 
-  const generateCurriculaDTO = (categoryData: Category): CurriculaDTO => {
-    // Process relationships only in the Major category
-    const processedCategory = processRelationships(categoryData);
+  const getAllCategoryCourses = (): string[] => {
+    const allCourses: string[] = [];
 
-    // Calculate credits for the processed category
-    const rootDTO = calculateCreditsForCategory(
-      processedCategory || categoryData
-    );
-
-    const updatedChildCategories = rootDTO.child?.map((group) => {
-      if (
-        group.type_id ===
-        typesData?.find((type) => type.name_en === "Free Electives")?.id
-      ) {
-        const freeElectiveCredits = calculateFreeElectiveCredits();
-        return {
-          ...group,
-          earned_credit: freeElectiveCredits, // Update earned credits for Free Electives
-        };
+    const collectCourses = (category: Category) => {
+      if (category.courses) {
+        allCourses.push(...category.courses);
       }
-      return group;
-    });
-
-    return {
-      ...rootDTO,
-      child: updatedChildCategories || [],
+      if (category.child_categories) {
+        category.child_categories.forEach(collectCourses);
+      }
     };
-  };
 
-  const handleCopyToClipboard = () => {
-    if (curriculaData) {
-      navigator.clipboard
-        .writeText(JSON.stringify(curriculaData, null, 2))
-        .then(() => {})
-        .catch(() => {
-          alert("Failed to copy JSON.");
-        });
+    if (categoryData) {
+      collectCourses(categoryData);
     }
+
+    return allCourses;
   };
 
   const renderCurriculaData = () => {
     if (!curriculaData) return null;
 
+    const groupedData: { [key: number]: GroupDTO[] } = {
+      1: [],
+      2: [],
+      3: [],
+    };
+
+    // Group categories by type_id for display
+    curriculaData.child.forEach((group) => {
+      if (groupedData[group.type_id]) {
+        groupedData[group.type_id].push(group);
+      }
+    });
+
     const renderGroup = (group: GroupDTO) => (
-      <div key={group.name_en} className="ml-4">
-        <h3>{group.name_en}</h3>
+      <div key={group.id} className="ml-4 mb-4">
+        <h3 className="text-md font-semibold">{group.name_en}</h3>
         <p>
           Total Credits: {group.total_credit}, Earned Credits:{" "}
           {group.earned_credit}
         </p>
         {group.child && group.child.length > 0 && (
-          <div>{group.child.map((childGroup) => renderGroup(childGroup))}</div>
+          <div className="ml-4">
+            {group.child.map((childGroup) => renderGroup(childGroup))}
+          </div>
         )}
       </div>
     );
 
     return (
       <div>
-        <h2>{curriculaData.name_en}</h2>
-        <p>
-          Total Credits: {curriculaData.total_credit}, Earned Credits:{" "}
-          {curriculaData.earned_credit}
-        </p>
-        {curriculaData.child.map((group) => renderGroup(group))}
+        {Object.entries(groupedData).map(([typeId, groups]) => (
+          <div key={typeId} className="mb-8">
+            <h2 className="text-lg font-bold">
+              {typesData?.find((type) => type.id === parseInt(typeId))?.name_en}
+            </h2>
+            {groups.map((group) => renderGroup(group))}
+          </div>
+        ))}
       </div>
     );
   };
@@ -428,11 +417,8 @@ const CategoryDetail: React.FC = () => {
         {curriculaData && (
           <>
             <pre style={styles.jsonOutput as React.CSSProperties}>
-              {JSON.stringify(curriculaData, null, 2)}
+              {JSON.stringify(curriculaData.child, null, 2)}
             </pre>
-            <button style={styles.copyButton} onClick={handleCopyToClipboard}>
-              Copy JSON
-            </button>
           </>
         )}
       </div>
@@ -469,15 +455,5 @@ const styles = {
     marginBottom: "20px",
     border: "1px solid #ddd",
     fontSize: "14px",
-  },
-  copyButton: {
-    padding: "10px 20px",
-    backgroundColor: "#4caf50",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease",
-    fontWeight: "bold",
   },
 };

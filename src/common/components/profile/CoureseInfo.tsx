@@ -274,7 +274,7 @@ const CourseInfo = () => {
   return (
     <div className="flex flex-row justify-center gap-8">
       <div className="flex flex-col my-4">
-        <div className="flex flex-col mt-6 ml-8  ">
+        <div className="flex flex-col mt-6 ml-8  bg-blue-shadeb05 p-2 rounded-[20px]">
           {groupedByYear.map(({ year, semesters }) => (
             <div key={year} className="flex flex-col">
               {semesters.map((semester) => (
@@ -305,7 +305,6 @@ const CourseInfo = () => {
           ))}
         </div>
       </div>
-
       <div className="flex flex-row mt-10">
         <table className="table-auto rounded-[20px] w-fit mr-8">
           <thead className="bg-blue-shadeb05 text-blue-shadeb5 text-md">
@@ -322,7 +321,7 @@ const CourseInfo = () => {
               <th className="border-b border-blue-shadeb05 w-[40px] px-4 py-2 text-center">
                 เกรด
               </th>
-              <th className="border-b border-blue-shadeb05 w-[300px] px-4 py-2 text-center rounded-tr-[18px]">
+              <th className="border-b border-blue-shadeb05 w-[250px] px-4 py-2 text-center rounded-tr-[18px]">
                 หมวดหมู่
               </th>
             </tr>
@@ -334,7 +333,7 @@ const CourseInfo = () => {
                   key={enrolledCourse.CourseNo}
                   className={`border-b border-gray-300 ${
                     index % 2 === 0 ? "bg-white" : "bg-gray-200"
-                  } hover:bg-blue-shadeb1 hover:scale-105 text-sm`}
+                  } hover:bg-blue-shadeb1 hover:scale-105 text-sm duration-200 transition-all cursor-default`}
                 >
                   <td className="px-4 py-2 text-center">
                     {enrolledCourse.CourseNo}
