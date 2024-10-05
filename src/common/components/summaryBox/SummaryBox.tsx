@@ -4,6 +4,7 @@ import { CreditSummary } from "./CreditSummaryBox";
 import { FreeSummary } from "./FreeSummary";
 
 const SummaryBox = ({
+  courseGroups,
   totalCredits,
   totalGeCredits,
   totalGeEarnedCredits,
@@ -12,6 +13,10 @@ const SummaryBox = ({
   totalFreeElectiveCredits,
   totalFreeEarnedCredits,
 }: {
+  courseGroups: Record<
+    string,
+    { groupName: string; earnedCredits: number; requiredCredits: number }
+  >;
   totalCredits: number;
   totalGeCredits: number;
   totalGeEarnedCredits: number;
@@ -38,29 +43,9 @@ const SummaryBox = ({
 
         {/* General Education Groups */}
         <CreditListGroup
-          groups={[
-            {
-              groupName: "Learner Person",
-              requiredCredits: 9,
-              earnedCredits: 9,
-            },
-            {
-              groupName: "Co-Creator",
-              requiredCredits: 6,
-              earnedCredits: 6,
-            },
-            {
-              groupName: "Active Citizen",
-              requiredCredits: 6,
-              earnedCredits: 6,
-            },
-            {
-              groupName: "Elective",
-              requiredCredits: 9,
-              earnedCredits: 6,
-            },
-          ]}
+          groups={courseGroups}
           borderColor="border-amber-300"
+          isGE={true}
         />
 
         {/* Major Requirements Summary */}
@@ -76,23 +61,8 @@ const SummaryBox = ({
 
         {/* Major Requirement Groups */}
         <CreditListGroup
-          groups={[
-            {
-              groupName: "Core",
-              requiredCredits: 30,
-              earnedCredits: 25,
-            },
-            {
-              groupName: "Major Elective",
-              requiredCredits: 15,
-              earnedCredits: 10,
-            },
-            {
-              groupName: "Major Required",
-              requiredCredits: 6,
-              earnedCredits: 6,
-            },
-          ]}
+          groups={courseGroups}
+          isGE={false}
           borderColor="border-blue-shadeb4"
         />
 

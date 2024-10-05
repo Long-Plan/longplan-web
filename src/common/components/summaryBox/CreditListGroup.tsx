@@ -27,58 +27,73 @@ export const getColorForGroupName = (groupName: string): string => {
 export const CreditListGroup = ({
   groups,
   borderColor,
+  isGE,
 }: {
-  groups: {
-    groupName: string;
-    requiredCredits: number;
-    earnedCredits: number;
-  }[];
+  groups: Record<
+    string,
+    { groupName: string; earnedCredits: number; requiredCredits: number }
+  >;
   borderColor: string;
-}) => (
-  <div
-    className={`rounded-bl-2xl rounded-br-2xl bg-white px-4 py-1 border-t-0 border border-solid ${borderColor} mb-4 `}
-  >
-    <ul className="list-none">
-      {groups.map((group) => (
-        <li
-          key={group.groupName}
-          className={`my-3 text-[14px] flex items-center space-x-2`}
-        >
-          {/* CheckCircleIcon or bullet */}
-          {group.earnedCredits >= group.requiredCredits ? (
-            <CheckCircleIcon
-              className={`w-6 h-6 text-${getColorForGroupName(
-                group.groupName
-              )}`}
-              aria-label="Completed"
-            />
-          ) : (
-            <span
-              className={`w-6 h-6 text-center text-${getColorForGroupName(
-                group.groupName
-              )} font-bold`}
-            >
-              •
-            </span>
-          )}
+  isGE?: boolean;
+}) => {
+  const geGroups = [
+    "Learner Person",
+    "Co-Creator",
+    "Active Citizen",
+    "Elective",
+  ];
+  const filteredGroups = Object.values(groups).filter((group) =>
+    isGE
+      ? geGroups.includes(group.groupName)
+      : !geGroups.includes(group.groupName)
+  );
 
-          {/* Group Name and Credits */}
-          <span
-            className={`text-${getColorForGroupName(
-              group.groupName
-            )} flex-grow flex w-full font-semibold`}
+  return (
+    <div
+      className={`rounded-bl-2xl rounded-br-2xl bg-white px-4 py-1 border-t-0 border border-solid ${borderColor} mb-4 `}
+    >
+      <ul className="list-none">
+        {filteredGroups.map((group) => (
+          <li
+            key={group.groupName}
+            className={`my-3 text-[14px] flex items-center space-x-2`}
           >
-            {`${group.groupName}`}
-          </span>
-          <span
-            className={`text-${getColorForGroupName(
-              group.groupName
-            )} text-right w-[100px] font-semibold`}
-          >
-            {`${group.earnedCredits} / ${group.requiredCredits}`}
-          </span>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+            {/* CheckCircleIcon or bullet */}
+            {group.earnedCredits >= group.requiredCredits ? (
+              <CheckCircleIcon
+                className={`w-6 h-6 text-${getColorForGroupName(
+                  group.groupName
+                )}`}
+                aria-label="Completed"
+              />
+            ) : (
+              <span
+                className={`w-6 h-6 text-center text-${getColorForGroupName(
+                  group.groupName
+                )} font-bold`}
+              >
+                •
+              </span>
+            )}
+
+            {/* Group Name and Credits */}
+            <span
+              className={`text-${getColorForGroupName(
+                group.groupName
+              )} flex-grow flex w-full font-semibold`}
+            >
+              {`${group.groupName}`}
+            </span>
+            <span
+              className={`text-${getColorForGroupName(
+                group.groupName
+              )} text-right w-[100px] font-semibold`}
+            >
+              {`${group.earnedCredits} / ${group.requiredCredits}`}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};

@@ -8,6 +8,7 @@ import {
 } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
+import { coreApi } from "../../../../core/connections";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -50,8 +51,8 @@ export default function PlanSettingPopup({
   useEffect(() => {
     const fetchMajors = async () => {
       try {
-        const response = await fetch("http://10.10.182.135:8000/api/v1/majors");
-        const data = await response.json();
+        const response = await coreApi.get("/majors").then((res) => res.data);
+        const data = response;
         if (data.success) {
           setMajors(
             data.result.map((major: any) => ({
@@ -74,10 +75,10 @@ export default function PlanSettingPopup({
     if (selectedMajor) {
       const fetchCurriculum = async () => {
         try {
-          const response = await fetch(
-            `http://10.10.182.135:8000/api/v1/curricula/major/${selectedMajor.id}`
-          );
-          const data = await response.json();
+          const response = await coreApi
+            .get(`/curricula/major/${selectedMajor.id}`)
+            .then((res) => res.data);
+          const data = response;
           if (data.success) {
             const fetchedPrograms = data.result.map((program: any) => ({
               id: program.id, // Program ID
