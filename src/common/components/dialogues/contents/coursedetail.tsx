@@ -15,12 +15,14 @@ interface CourseDetailsPopupProps {
   isOpen: boolean;
   onClose: () => void;
   courseDetails: CourseDetails;
+  group: string;
 }
 
 export default function CourseDetailsPopup({
   isOpen,
   onClose,
   courseDetails,
+  group,
 }: CourseDetailsPopupProps) {
   // Return null if the popup is not open
   if (!isOpen) return null;
@@ -59,7 +61,7 @@ export default function CourseDetailsPopup({
           </p>
           <p>
             <strong>หมวดหมู่:</strong>{" "}
-            <span className="text-blue-shadeb5">{courseDetails.category}</span>
+            <span className="text-blue-shadeb5">{group}</span>
           </p>
           <p>
             <strong>ปีและภาคเรียนที่แนะนำ:</strong> {"ปี  "}

@@ -4,7 +4,7 @@ import { CreditSummary } from "./CreditSummaryBox";
 import { FreeSummary } from "./FreeSummary";
 
 const SummaryBox = ({
-  courseGroups,
+  listgroup,
   totalCredits,
   totalGeCredits,
   totalGeEarnedCredits,
@@ -13,10 +13,7 @@ const SummaryBox = ({
   totalFreeElectiveCredits,
   totalFreeEarnedCredits,
 }: {
-  courseGroups: Record<
-    string,
-    { groupName: string; earnedCredits: number; requiredCredits: number }
-  >;
+  listgroup: Record<string, any>;
   totalCredits: number;
   totalGeCredits: number;
   totalGeEarnedCredits: number;
@@ -43,9 +40,9 @@ const SummaryBox = ({
 
         {/* General Education Groups */}
         <CreditListGroup
-          groups={courseGroups}
-          borderColor="border-amber-300"
+          groups={listgroup}
           isGE={true}
+          borderColor="border-amber-300"
         />
 
         {/* Major Requirements Summary */}
@@ -61,7 +58,7 @@ const SummaryBox = ({
 
         {/* Major Requirement Groups */}
         <CreditListGroup
-          groups={courseGroups}
+          groups={listgroup}
           isGE={false}
           borderColor="border-blue-shadeb4"
         />
@@ -78,11 +75,7 @@ const SummaryBox = ({
         />
       </div>
 
-      {/* Total Credits Progress Bar */}
-      {totalCredits ===
-        totalCoreAndMajorRequiredCredits +
-          totalGeCredits +
-          totalFreeElectiveCredits && (
+      {totalCredits > 0 && (
         <div className="mt-5">
           <h3 className="text-center">หน่วยกิตรวม</h3>
           <p className="text-center text-collection-1-black-shade-bl2 m-2 text-sm">

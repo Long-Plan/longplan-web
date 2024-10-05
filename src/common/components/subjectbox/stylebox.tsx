@@ -103,6 +103,16 @@ export const GeBox: React.FC<BoxProps> = (props) => (
   />
 );
 
+export const ActBox: React.FC<BoxProps> = (props) => (
+  <StyledBox
+    {...props}
+    bgColor="bg-collection-1-active-citizen-r-sl"
+    borderColor="border-collection-1-active-citizen-r2"
+    textColor="text-collection-1-active-citizen-r2"
+    badgeColor="bg-collection-1-active-citizen-r2"
+  />
+);
+
 export const LearnerBox: React.FC<BoxProps> = (props) => (
   <StyledBox
     {...props}
@@ -123,17 +133,12 @@ export const MajorBox: React.FC<BoxProps> = (props) => (
   />
 );
 
-export const FreeBox: React.FC = () => (
+export const FreeBox: React.FC<BoxProps> = (props) => (
   <StyledBox
-    course_no="000000"
-    course_title_long_en="Free Elective"
-    credit={0}
+    {...props}
     borderColor="border-collection-1-black-shade-bl4"
-    bgColor="bg-collection-1-black-shade-bl4"
+    bgColor="bg-collection-1-black-sl"
     textColor="text-collection-1-black-shade-bl4"
-    badgeColor="text-collection-1-black-shade-bl4"
-    course_title_long_th={""}
-    course_desc_th={""}
-    course_desc_en={""}
+    badgeColor="bg-collection-1-black-shade-bl4"
   />
 );
