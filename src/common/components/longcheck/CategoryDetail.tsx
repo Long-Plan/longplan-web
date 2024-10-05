@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getEnrolledCourses } from "../utils/enrolledCourse";
+import { coreApi } from "../../../core/connections";
 
 // Define your interfaces here
 interface ApiResponse {
@@ -146,34 +147,34 @@ const CategoryDetail: React.FC = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const categoryResponse = await fetch(
-          "http://10.10.182.135:8000/api/v1/categories/1"
-        );
-        if (!categoryResponse.ok) {
+        const categoryResponse = await coreApi
+          .get("/categories/1")
+          .then((res) => res.data);
+        if (!categoryResponse.success) {
           throw new Error("Failed to fetch curriculum data");
         }
-        const categoryData: ApiResponse = await categoryResponse.json();
+        const categoryData: ApiResponse = categoryResponse;
         setCategoryData(categoryData.result);
 
         const enrollmentResponse = await getEnrolledCourses();
-        setEnrollmentData(enrollmentResponse.result);
+        setEnrollmentData(enrollmentResponse);
 
-        const coursesResponse = await fetch(
-          "http://10.10.182.135:8000/api/v1/curricula/courses/1"
-        );
-        if (!coursesResponse.ok) {
+        const coursesResponse = await coreApi
+          .get("/curricula/courses/1")
+          .then((res) => res.data);
+        if (!coursesResponse.success) {
           throw new Error("Failed to fetch course data");
         }
-        const coursesData: CoursesApiResponse = await coursesResponse.json();
+        const coursesData: CoursesApiResponse = coursesResponse;
         setCoursesData(coursesData.result);
 
-        const typesResponse = await fetch(
-          "http://10.10.182.135:8000/api/v1/categories/types"
-        );
-        if (!typesResponse.ok) {
+        const typesResponse = await coreApi
+          .get("/categories/types")
+          .then((res) => res.data);
+        if (!typesResponse.success) {
           throw new Error("Failed to fetch types data");
         }
-        const typesData: TypesAPIResponse = await typesResponse.json();
+        const typesData: TypesAPIResponse = typesResponse;
         setTypesData(typesData.result);
       } catch (err) {
         setError((err as Error).message);
