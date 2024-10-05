@@ -1,7 +1,8 @@
 import React from "react";
 
-function truncate(str: string, n: number): string {
-  return str.length > n ? `${str.substring(0, n - 1)}...` : str;
+function truncate(str: string | undefined | null, maxLength: number): string {
+  if (!str) return ""; // Handle undefined or null strings
+  return str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
 }
 
 // "course_no": "001101",

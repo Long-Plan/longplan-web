@@ -1,23 +1,61 @@
 import { coreApi } from "../../../core/connections";
 import { CourseDetails } from "../dialogues/contents/coursedetail";
 
-type ApiResponse = {
+type ApiResponse<T> = {
   success: boolean;
   message: string;
-  result: CourseDetails;
+  result: T;
 };
+
+export interface Courses {
+  course_no: string;
+  semester: number;
+  years: number;
+  detail: CourseDetails;
+}
 
 async function getCourseDetailByCourseNo(
   course_no: string
 ): Promise<CourseDetails> {
   try {
-    const response = await coreApi
-      .get<ApiResponse>(`/course-details/${course_no}`)
-      .then((res) => res.data);
-    return response.result;
+    const { data } = await coreApi.get<ApiResponse<CourseDetails>>(
+      `/course-details/${course_no}`
+    );
+    if (!data.success) {
+      throw new Error(data.message);
+    }
+    return data.result;
   } catch (error) {
-    throw new Error("Failed to fetch enrolled courses.");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch course details: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch course details: Unknown error");
+    }
   }
 }
 
-export { getCourseDetailByCourseNo };
+async function getCourseDetailByCurriculumID(
+  curriculumID: string
+): Promise<Courses[]> {
+  try {
+    const { data } = await coreApi.get<ApiResponse<Courses[]>>(
+      `/curricula/courses/${curriculumID}`
+    );
+    if (!data.success) {
+      throw new Error(data.message);
+    }
+    return data.result;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(
+        `Failed to fetch courses by curriculum ID: ${error.message}`
+      );
+    } else {
+      throw new Error(
+        "Failed to fetch courses by curriculum ID: Unknown error"
+      );
+    }
+  }
+}
+
+export { getCourseDetailByCourseNo, getCourseDetailByCurriculumID };

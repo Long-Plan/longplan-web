@@ -5,10 +5,7 @@ export interface CourseDetails {
   course_desc_th: string;
   course_desc_en: string;
   credit: number;
-  category?: string;
-  recommendedYear?: string;
-  recommendedSemester?: string;
-  prerequisites: string;
+  prerequisite: string;
 }
 
 interface CourseDetailsPopupProps {
@@ -16,6 +13,8 @@ interface CourseDetailsPopupProps {
   onClose: () => void;
   courseDetails: CourseDetails;
   group: string;
+  year?: number;
+  semester?: number;
 }
 
 export default function CourseDetailsPopup({
@@ -23,6 +22,8 @@ export default function CourseDetailsPopup({
   onClose,
   courseDetails,
   group,
+  year,
+  semester,
 }: CourseDetailsPopupProps) {
   // Return null if the popup is not open
   if (!isOpen) return null;
@@ -65,8 +66,8 @@ export default function CourseDetailsPopup({
           </p>
           <p>
             <strong>ปีและภาคเรียนที่แนะนำ:</strong> {"ปี  "}
-            {courseDetails.recommendedYear} {"ภาคเรียนที่  "}
-            {courseDetails.recommendedSemester}
+            {year} {"ภาคเรียนที่  "}
+            {semester}
           </p>
         </div>
 
@@ -77,11 +78,11 @@ export default function CourseDetailsPopup({
           วิชาที่ต้องผ่านก่อน (Pre-Requisite)
         </h3>
         <div className="space-y-2 text-start">
-          {courseDetails.prerequisites &&
-          courseDetails.prerequisites.length > 0 ? (
+          {courseDetails.prerequisite &&
+          courseDetails.prerequisite !== "None" ? (
             <ul className="list-disc ml-5">
               <li className="text-blue-shadeb5">
-                {courseDetails.prerequisites}
+                {courseDetails.prerequisite}
               </li>
             </ul>
           ) : (
