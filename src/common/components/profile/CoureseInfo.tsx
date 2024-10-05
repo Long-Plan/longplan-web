@@ -35,8 +35,9 @@ const CourseInfo = () => {
       try {
         const enrolledData = await getEnrolledCourses();
         const categoryData = await mapCategoriesToTypes();
-        setEnrolledCourses(enrolledData.result);
+        setEnrolledCourses(enrolledData);
         setCategory(categoryData);
+        console.log(categoryData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred."

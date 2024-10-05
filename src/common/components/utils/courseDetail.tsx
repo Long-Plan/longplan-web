@@ -11,10 +11,10 @@ async function getCourseDetailByCourseNo(
   course_no: string
 ): Promise<CourseDetails> {
   try {
-    const response = await coreApi.get<ApiResponse>(
-      `http://10.10.182.135:8000/api/v1/course-details/${course_no}`
-    );
-    return response.data.result;
+    const response = await coreApi
+      .get<ApiResponse>(`/course-details/${course_no}`)
+      .then((res) => res.data);
+    return response.result;
   } catch (error) {
     throw new Error("Failed to fetch enrolled courses.");
   }

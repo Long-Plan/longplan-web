@@ -1,6 +1,7 @@
 import { PageContainer } from "../../common/components/container/PageContainer";
 import ContainerWithoutHeader from "../../common/components/container/WithoutHeaderContainer";
 import CategoryDetail from "../../common/components/longcheck/CategoryDetail";
+import Diagram from "../../common/components/longcheck/Diagram";
 import { CoCreBox } from "../../common/components/subjectbox/stylebox";
 import SubjectBox from "../../common/components/subjectbox/subjectbox";
 
@@ -8,6 +9,7 @@ function HomePage() {
   return (
     <PageContainer>
       <ContainerWithoutHeader>
+        <Diagram />
         <h1 className="text-2xl font-bold text-center">Call SubjectBox</h1>
         <SubjectBox
           BoxComponent={CoCreBox}

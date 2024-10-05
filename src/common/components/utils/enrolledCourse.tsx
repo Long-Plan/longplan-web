@@ -18,12 +18,12 @@ export type MappingEnrolledCourse = {
   Courses: EnrolledCourse[];
 };
 
-export async function getEnrolledCourses(): Promise<ApiResponse> {
+export async function getEnrolledCourses(): Promise<MappingEnrolledCourse[]> {
   try {
-    const response = await coreApi.get(
-      `http://10.10.182.135:8000/api/v1/enrolled-courses`
-    );
-    return response.data;
+    const response = await coreApi
+      .get<ApiResponse>(`/enrolled-courses`)
+      .then((res) => res.data);
+    return response.result;
   } catch (error) {
     throw new Error("Failed to fetch enrolled courses.");
   }

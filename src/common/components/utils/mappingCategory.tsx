@@ -1,5 +1,7 @@
 // Function to fetch categories and types with proper typing
 
+import { coreApi } from "../../../core/connections";
+
 // Interface for Relationships within categories
 interface Relationship {
   id: number;
@@ -74,23 +76,28 @@ interface CategoryTypesAPIResponse {
   message: string;
   result: CategoryType[];
 }
+
 const fetchCategoriesAndTypes = async (): Promise<{
   categories: Category | null;
   types: CategoryType[] | null;
 }> => {
   try {
     const [categoryResponse, typesResponse] = await Promise.all([
-      fetch("http://10.10.182.135:8000/api/v1/categories/1"),
-      fetch("http://10.10.182.135:8000/api/v1/categories/types"),
+      coreApi
+        .get<CategoriesAPIResponse>("/categories/1")
+        .then((res) => res.data),
+      coreApi
+        .get<CategoryTypesAPIResponse>("/categories/types")
+        .then((res) => res.data),
     ]);
 
     // Check if the responses are successful
-    if (!categoryResponse.ok || !typesResponse.ok) {
+    if (!categoryResponse.success || !typesResponse.success) {
       throw new Error("Failed to fetch data from API");
     }
 
-    const categoryData: CategoriesAPIResponse = await categoryResponse.json();
-    const typesData: CategoryTypesAPIResponse = await typesResponse.json();
+    const categoryData: CategoriesAPIResponse = categoryResponse;
+    const typesData: CategoryTypesAPIResponse = typesResponse;
 
     return { categories: categoryData.result, types: typesData.result };
   } catch (error) {
@@ -141,14 +148,14 @@ export const mapCategoriesToTypes = async (): Promise<
 };
 
 // Example usage of the function (for debugging purposes)
-(async () => {
-  const groupedCategories = await mapCategoriesToTypes();
+// (async () => {
+//   const groupedCategories = await mapCategoriesToTypes();
 
-  // Output the result to check the structure
-  if (groupedCategories) {
-    console.log(
-      "Grouped Categories:",
-      JSON.stringify(groupedCategories, null, 2)
-    );
-  }
-})();
+//   // Output the result to check the structure
+//   if (groupedCategories) {
+//     console.log(
+//       "Grouped Categories:",
+//       JSON.stringify(groupedCategories, null, 2)
+//     );
+//   }
+// })();
