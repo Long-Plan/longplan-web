@@ -6,7 +6,7 @@ interface Props {
 
 function ContainerWithoutHeader({ children }: Props) {
   return (
-    <div className="bg-white rounded-[20px] shadow-md mb-4 w-[1100px]">
+    <div className="bg-white rounded-[20px] mb-4 max-w-screen-xl">
       <div className="p-2 md:p-10 w-full overflow-y-auto">{children}</div>
     </div>
   );

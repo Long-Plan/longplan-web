@@ -12,7 +12,7 @@ export const yearMap: { [key: string]: string } = {
 export const semesterMap: { [key: string]: string } = {
   1: "1st Semester",
   2: "2nd Semester",
-  3: "3rd Semester",
+  3: "Summer",
 };
 
 const getYearAndSemester = (year: number, semester: number): string => {

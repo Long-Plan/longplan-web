@@ -143,3 +143,14 @@ export const FreeBox: React.FC<BoxProps> = (props) => (
     badgeColor="bg-collection-1-black-shade-bl4"
   />
 );
+
+export const UncountedBox: React.FC<BoxProps> = (props) => (
+  <StyledBox
+    {...props}
+    credit={0}
+    bgColor="bg-gray-50"
+    borderColor="border-gray-200"
+    textColor="text-gray-300"
+    badgeColor="bg-gray-200"
+  />
+);
