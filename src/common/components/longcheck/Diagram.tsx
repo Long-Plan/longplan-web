@@ -25,7 +25,6 @@ import {
   getCourseDetailByCourseNo,
   getCourseDetailByCurriculumID,
 } from "../utils/courseDetail";
-import { group } from "console";
 import { semesterMap, yearMap } from "../utils/utils";
 import BlankBox from "../subjectbox/blankbox";
 
@@ -67,43 +66,6 @@ function Diagram() {
 
     fetchData();
   }, []);
-
-  // Fetch course details for both "Curriculum" and "Free" groups
-  useEffect(() => {
-    const fetchCourseDetails = async () => {
-      if (enrolledCourses.length === 0) return;
-
-      const courseNos = enrolledCourseFree.map((course) => course?.CourseNo);
-
-      try {
-        const [curriculumDetails, freeDetails] = await Promise.all([
-          getCourseDetailByCurriculumID("1"),
-          Promise.all(courseNos.map(getCourseDetailByCourseNo)),
-        ]);
-
-        // Organize curriculum details by course number
-        const courseDetailsMap: Record<string, any> = {};
-        curriculumDetails.forEach((course) => {
-          courseDetailsMap[course.course_no] = course;
-        });
-        setCourseDetails(courseDetailsMap);
-
-        // Map the free course details by course number
-        const freeDetailsMap: Record<string, any> = {};
-        freeDetails.forEach((detail, index) => {
-          freeDetailsMap[courseNos[index]] = detail;
-        });
-        setCourseDetailsFree(freeDetailsMap);
-      } catch (error) {
-        console.error("Failed to fetch course details:", error);
-      }
-    };
-
-    fetchCourseDetails();
-  }, [enrolledCourses]);
-
-  console.log("courseDetailsMajor", courseDetails);
-  console.log("courseDetailsFree", courseDetailsFree);
 
   const lookupTable: Record<string, string[]> = {
     "Learner Person": ["Learner Person"],
@@ -208,6 +170,74 @@ function Diagram() {
 
     return "Free Elective";
   };
+
+  // Order enrolled courses by group
+  const orderedCourses = useMemo(() => {
+    if (!enrolledCourses) return [];
+
+    const groupOrder: Record<string, number> = {
+      "Learner Person": 1,
+      "Innovative Co-creator": 2,
+      "Active Citizen": 3,
+      "GE Elective": 4,
+      Core: 5,
+      "Major Required": 6,
+      "Major Elective": 7,
+      "Free Elective": 8,
+    };
+
+    const getGroupRank = (courseNo: string): number => {
+      const group = getLookupForCourse(courseNo);
+      return group ? groupOrder[group] || 9 : 9; // Default rank if not found
+    };
+
+    // Sort the courses by group rank
+    const sortedCourses = enrolledCourses?.map((courseGroup) => ({
+      ...courseGroup,
+      Courses: courseGroup.Courses.sort(
+        (a, b) => getGroupRank(a.CourseNo) - getGroupRank(b.CourseNo)
+      ),
+    }));
+
+    return sortedCourses;
+  }, [enrolledCourses]);
+
+  // Fetch course details for both "Curriculum" and "Free" groups
+  useEffect(() => {
+    const fetchCourseDetails = async () => {
+      if (orderedCourses.length === 0) return;
+
+      const courseNos = enrolledCourseFree.map((course) => course?.CourseNo);
+
+      try {
+        const [curriculumDetails, freeDetails] = await Promise.all([
+          getCourseDetailByCurriculumID("1"),
+          Promise.all(courseNos.map(getCourseDetailByCourseNo)),
+        ]);
+
+        // Organize curriculum details by course number
+        const courseDetailsMap: Record<string, any> = {};
+        curriculumDetails.forEach((course) => {
+          courseDetailsMap[course.course_no] = course;
+        });
+        setCourseDetails(courseDetailsMap);
+
+        // Map the free course details by course number
+        const freeDetailsMap: Record<string, any> = {};
+        freeDetails.forEach((detail, index) => {
+          freeDetailsMap[courseNos[index]] = detail;
+        });
+        setCourseDetailsFree(freeDetailsMap);
+      } catch (error) {
+        console.error("Failed to fetch course details:", error);
+      }
+    };
+
+    fetchCourseDetails();
+  }, [orderedCourses]);
+
+  // console.log("courseDetailsMajor", courseDetails);
+  // console.log("courseDetailsFree", courseDetailsFree);
 
   const getLookupMainForCourse = (courseNo: string): string | null => {
     const result = findGroupByCourseNo(courseNo);
@@ -419,12 +449,56 @@ function Diagram() {
     }, 0);
   }, [enrolledCourses]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const remainingCourses = useMemo(() => {
+    const remaining: Record<
+      string,
+      {
+        courses: (Courses & {
+          subGroup: string;
+          mainGroup: string;
+          year: number;
+          semester: number;
+        })[];
+      }
+    > = {};
+
+    // Ensure orderedCourses is not null/undefined and has length
+    if (!orderedCourses || !orderedCourses.length) return remaining;
+
+    // Iterate over the courseDetails to find courses not yet enrolled
+    Object.keys(courseDetails).forEach((courseNo) => {
+      const courseDetail = courseDetails[courseNo];
+
+      // Check that the courseDetail has valid year and semester values
+      if (courseDetail?.years && courseDetail?.semester) {
+        // Determine if the course is already enrolled
+        const isEnrolled = orderedCourses.some((courseGroup) =>
+          courseGroup.Courses.some((course) => course.CourseNo === courseNo)
+        );
+
+        // If the course is not enrolled, add it to the remaining object
+        if (!isEnrolled) {
+          const courseGroup = getLookupMainForCourse(courseNo) || "FREE";
+          const subGroup = getLookupForCourse(courseNo) || "Free Elective";
+          if (!remaining[courseGroup]) {
+            remaining[courseGroup] = { courses: [] };
+          }
+          remaining[courseGroup].courses.push({
+            ...courseDetail,
+            subGroup,
+            mainGroup: courseGroup,
+            year: courseDetail.years,
+            semester: courseDetail.semester,
+          });
+        }
+      }
+    });
+
+    return remaining;
+  }, [courseDetails, orderedCourses]);
+
+  // console.log("remainingCourses", remainingCourses);
+  // console.log("orderedCourses", orderedCourses);
 
   const totalGeCredits =
     (categoryCredits?.["Learner Person"] || 0) +
@@ -468,15 +542,14 @@ function Diagram() {
     semesters: EnrolledCourseGroupWithGroup[];
   };
 
-  const enrolledCoursesWithCourseGroup: EnrolledCourseGroupWithGroup[] =
-    enrolledCourses.map((courseGroup) => ({
-      ...courseGroup,
-      Courses: courseGroup.Courses.map((course) => ({
-        ...course,
-        group: getLookupForCourse(course.CourseNo),
-        mainGroup: getLookupMainForCourse(course.CourseNo),
-      })),
-    }));
+  const enrolledCoursesWithCourseGroup = orderedCourses?.map((courseGroup) => ({
+    ...courseGroup,
+    Courses: courseGroup.Courses.map((course) => ({
+      ...course,
+      group: getLookupForCourse(course.CourseNo),
+      mainGroup: getLookupMainForCourse(course.CourseNo),
+    })),
+  }));
 
   const getBoxComponentbyCourseGroup = (group: string) => {
     switch (group) {
@@ -510,11 +583,28 @@ function Diagram() {
     if (!acc[courseGroup.Year][courseGroup.Semester]) {
       acc[courseGroup.Year][courseGroup.Semester] = 0;
     }
-    acc[courseGroup.Year][courseGroup.Semester] += courseGroup.Courses.filter(
-      (course) => course.mainGroup === "GE"
-    ).length;
+    if (["1", "2", "3"].includes(courseGroup.Semester)) {
+      acc[courseGroup.Year][courseGroup.Semester] += courseGroup.Courses.filter(
+        (course) => course.mainGroup === "GE"
+      ).length;
+    }
     return acc;
   }, {});
+
+  // Include remaining courses in the count
+  Object.keys(remainingCourses).forEach((group) => {
+    remainingCourses[group].courses.forEach((course) => {
+      if (course.mainGroup === "GE") {
+        if (!countGE[course.years]) {
+          countGE[course.years] = {};
+        }
+        if (!countGE[course.years][course.semester]) {
+          countGE[course.years][course.semester] = 0;
+        }
+        countGE[course.years][course.semester] += 1;
+      }
+    });
+  });
 
   const countMAJOR = enrolledCoursesWithCourseGroup.reduce<
     Record<string, Record<string, number>>
@@ -525,26 +615,61 @@ function Diagram() {
     if (!acc[courseGroup.Year][courseGroup.Semester]) {
       acc[courseGroup.Year][courseGroup.Semester] = 0;
     }
-    acc[courseGroup.Year][courseGroup.Semester] += courseGroup.Courses.filter(
-      (course) => course.mainGroup === "MAJOR"
-    ).length;
+    if (["1", "2", "3"].includes(courseGroup.Semester)) {
+      acc[courseGroup.Year][courseGroup.Semester] += courseGroup.Courses.filter(
+        (course) => course.mainGroup === "MAJOR"
+      ).length;
+    }
     return acc;
   }, {});
+
+  // Include remaining courses in the count
+  Object.keys(remainingCourses).forEach((group) => {
+    remainingCourses[group].courses.forEach((course) => {
+      if (course.mainGroup === "MAJOR") {
+        if (!countMAJOR[course.year]) {
+          countMAJOR[course.year] = {};
+        }
+        if (!countMAJOR[course.year][course.semester]) {
+          countMAJOR[course.year][course.semester] = 0;
+        }
+        countMAJOR[course.year][course.semester] += 1;
+      }
+    });
+  });
 
   const countFREE = enrolledCoursesWithCourseGroup.reduce<
     Record<string, Record<string, number>>
   >((acc, courseGroup) => {
-    if (!acc[courseGroup.Year]) {
-      acc[courseGroup.Year] = {};
+    const { Year, Semester, Courses } = courseGroup;
+    if (!acc[Year]) {
+      acc[Year] = {};
     }
-    if (!acc[courseGroup.Year][courseGroup.Semester]) {
-      acc[courseGroup.Year][courseGroup.Semester] = 0;
+    if (!acc[Year][Semester]) {
+      acc[Year][Semester] = 0;
     }
-    acc[courseGroup.Year][courseGroup.Semester] += courseGroup.Courses.filter(
-      (course) => course.mainGroup === "FREE"
-    ).length;
+    if (["1", "2", "3"].includes(Semester)) {
+      acc[Year][Semester] += Courses.filter(
+        (course) => course.mainGroup === "FREE"
+      ).length;
+    }
     return acc;
   }, {});
+
+  // Include remaining courses in the count
+  Object.keys(remainingCourses).forEach((group) => {
+    remainingCourses[group].courses.forEach((course) => {
+      if (course.mainGroup === "FREE") {
+        if (!countFREE[course.years]) {
+          countFREE[course.years] = {};
+        }
+        if (!countFREE[course.years][course.semester]) {
+          countFREE[course.years][course.semester] = 0;
+        }
+        countFREE[course.years][course.semester] += 1;
+      }
+    });
+  });
 
   const highestMaxGE = Math.max(
     ...enrolledCoursesWithCourseGroup.map(
@@ -569,19 +694,33 @@ function Diagram() {
     )
   );
 
-  const enrolledCourseFree = enrolledCoursesWithCourseGroup
-    .map((courseGroup) =>
-      courseGroup.Courses.find((course) => course.mainGroup === "FREE")
-    )
-    .filter((course) => course !== undefined);
+  // console.log("enrolledCoursesWithCourseGroup", enrolledCoursesWithCourseGroup);
+
+  const enrolledCourseFree = enrolledCoursesWithCourseGroup.flatMap(
+    (courseGroup) =>
+      courseGroup.Courses.filter((course) => course.mainGroup === "FREE")
+  );
+
+  // console.log("enrolledCourseFree", enrolledCourseFree);
+  console.log(remainingCourses);
+  console.log("countGE", countGE);
+  console.log("countMAJOR", countMAJOR);
+  console.log("countFREE", countFREE);
 
   const renderPlaceholder = (max: number, count: number) => {
     const placeholders = [];
     for (let i = 0; i < max - count; i++) {
-      placeholders.push(<BlankBox />);
+      placeholders.push(<BlankBox key={i} />);
     }
     return placeholders;
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <>
@@ -616,184 +755,217 @@ function Diagram() {
             )}
           </div>
         </div>
-        <div className="overflow-x-auto overflow-y-hidden hover:overflow-x-scroll overscroll-x-contain">
-          <div className="flex">
-            {enrolledCoursesWithCourseGroup
-              .reduce((acc: YearGroup[], courseGroup) => {
-                const existingYearGroup = acc.find(
-                  (group) => group.Year === courseGroup.Year
-                );
-                if (existingYearGroup) {
-                  existingYearGroup.semesters.push(courseGroup);
-                } else {
-                  acc.push({
-                    Year: courseGroup.Year,
-                    semesters: [courseGroup],
-                  });
-                }
-                return acc;
-              }, [])
-              .map((yearGroup) => (
-                <div
-                  key={yearGroup.Year}
-                  className="flex flex-col border rounded-[20px]"
-                >
+        <div className="overflow-x-auto overflow-y-hidden hover:overflow-x-scroll overscroll-x-containw-full">
+          <div className="flex w-full overflow-x-auto">
+            {[1, 2, 3, 4].map((year) => {
+              const yearGroup = enrolledCoursesWithCourseGroup.reduce(
+                (acc: YearGroup | undefined, courseGroup) => {
+                  if (Number(courseGroup.Year) === year) {
+                    if (acc) {
+                      acc.semesters.push(courseGroup);
+                    } else {
+                      acc = {
+                        Year: courseGroup.Year,
+                        semesters: [courseGroup],
+                      };
+                    }
+                  }
+                  return acc;
+                },
+                undefined
+              );
+
+              return (
+                <div key={year} className="flex flex-col border rounded-[20px]">
                   <h1 className="text-center py-1 font-semibold">
-                    {yearMap[yearGroup.Year]}
+                    {yearMap[String(year)]}
                   </h1>
                   <div className="flex h-full">
-                    {yearGroup.semesters.map((courseGroup) => (
-                      <div
-                        key={courseGroup.Semester}
-                        className="border rounded-[20px] "
-                      >
-                        <p
-                          className="text-center text-[10px] text-blue-shadeb6 w-30 
-                        px-7 py-0.5 bg-blue-shadeb05 rounded-tl-2xl rounded-tr-2xl cursor-default"
-                        >
-                          {semesterMap[courseGroup.Semester]}
-                        </p>
-                        <div className="p-2">
-                          {courseGroup.Courses.map((course) => (
-                            <div
-                              key={course.CourseNo}
-                              className="flex justify-center items-center"
-                            >
-                              {course.mainGroup === "GE" && (
-                                <SubjectBox
-                                  BoxComponent={getBoxComponentbyCourseGroup(
-                                    course.group ?? "Free Elective"
-                                  )}
-                                  // Safely access course_detail using optional chaining (?.)
-                                  course_detail={
-                                    courseDetails[course.CourseNo]?.detail || {}
-                                  }
-                                  is_enrolled={true}
-                                  group={course.group ?? "Free Elective"}
-                                  year={
-                                    courseDetails[course.CourseNo]?.years || 0
-                                  }
-                                  semester={
-                                    courseDetails[course.CourseNo]?.semester ||
-                                    0
-                                  }
-                                />
-                              )}
-                            </div>
-                          ))}
-                          <div className="flex flex-col items-center justify-center">
-                            {renderPlaceholder(
-                              highestMaxGE,
-                              countGE[courseGroup.Year][courseGroup.Semester]
-                            )}
-                          </div>
-                        </div>
-                        <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
-                        <div className="p-2">
-                          {courseGroup.Courses.map((course) => (
-                            <div
-                              key={course.CourseNo}
-                              className="flex justify-center items-center"
-                            >
-                              {course.mainGroup === "MAJOR" && (
-                                <SubjectBox
-                                  BoxComponent={getBoxComponentbyCourseGroup(
-                                    course.group ?? "Free Elective"
-                                  )}
-                                  // Safely access course_detail using optional chaining (?.)
-                                  course_detail={
-                                    courseDetails[course.CourseNo]?.detail || {}
-                                  }
-                                  is_enrolled={true}
-                                  group={course.group ?? "Free Elective"}
-                                  year={
-                                    courseDetails[course.CourseNo]?.years || 0
-                                  }
-                                  semester={
-                                    courseDetails[course.CourseNo]?.semester ||
-                                    0
-                                  }
-                                />
-                              )}
-                            </div>
-                          ))}
-                          <div className="flex flex-col items-center justify-center">
-                            {renderPlaceholder(
-                              highestMaxMAJOR,
-                              countMAJOR[courseGroup.Year][courseGroup.Semester]
-                            )}
-                          </div>
-                        </div>
-                        <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
-                        <div>
-                          {courseGroup.Courses.map((course) => (
-                            <div
-                              key={course.CourseNo}
-                              className="flex justify-center items-center"
-                            >
-                              {course.mainGroup === "FREE" && (
-                                <SubjectBox
-                                  BoxComponent={getBoxComponentbyCourseGroup(
-                                    course.group ?? "Free Elective"
-                                  )}
-                                  // Safely access course_detail using optional chaining (?.)
-                                  course_detail={
-                                    courseDetails[course.CourseNo]?.detail ||
-                                    courseDetailsFree[course.CourseNo]
-                                  }
-                                  is_enrolled={true}
-                                  group={course.group ?? "Free Elective"}
-                                  year={
-                                    courseDetails[course.CourseNo]?.years || 0
-                                  }
-                                  semester={
-                                    courseDetails[course.CourseNo]?.semester ||
-                                    0
-                                  }
-                                />
-                              )}
-                            </div>
-                          ))}
-                          <div className="flex flex-col items-center justify-center">
-                            {renderPlaceholder(
-                              highestMaxFREE,
-                              countFREE[courseGroup.Year][courseGroup.Semester]
-                            )}
-                          </div>
-                        </div>
-                        <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
-                      </div>
-                    ))}
-                    {yearGroup.semesters.length <= 1 && (
-                      <div className="border rounded-[20px] flex-grow">
-                        <p
-                          className="text-center text-[10px] text-blue-shadeb6 w-30 
-                        px-7 py-0.5 bg-blue-shadeb05 rounded-tl-2xl rounded-tr-2xl cursor-default"
-                        >
-                          {semesterMap["2"]}
-                        </p>
-                        <div className="p-2">
-                          <div className="flex flex-col items-center justify-center">
-                            {renderPlaceholder(highestMaxGE, 0)}
-                          </div>
-                        </div>
-                        <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
-                        <div className="p-2">
-                          <div className="flex flex-col items-center justify-center">
-                            {renderPlaceholder(highestMaxMAJOR, 0)}
-                          </div>
-                        </div>
-                        <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
+                    {[1, 2, 3].map((semester) => {
+                      const courseGroup = yearGroup?.semesters.find(
+                        (group) => Number(group.Semester) === semester
+                      );
 
-                        <div className="flex flex-col items-center justify-center">
-                          {renderPlaceholder(highestMaxFREE, 0)}
+                      return (
+                        <div key={semester} className="border rounded-[20px]">
+                          <p
+                            className="text-center text-[10px] text-blue-shadeb6 w-30 
+                 px-6 py-0.5 bg-blue-shadeb05 rounded-t-[20px] cursor-default"
+                          >
+                            {semesterMap[String(semester)]}
+                          </p>
+                          <div className="p-2">
+                            {/* Render enrolled courses for the current year and semester */}
+                            {courseGroup?.Courses.map((course) => (
+                              <div
+                                key={course.CourseNo}
+                                className="flex justify-center items-center"
+                              >
+                                {course.mainGroup === "GE" && (
+                                  <SubjectBox
+                                    BoxComponent={getBoxComponentbyCourseGroup(
+                                      course.group ?? "Free Elective"
+                                    )}
+                                    course_detail={
+                                      courseDetails[course.CourseNo]?.detail ||
+                                      {}
+                                    }
+                                    is_enrolled={true}
+                                    group={course.group ?? "Free Elective"}
+                                    year={
+                                      courseDetails[course.CourseNo]?.years || 0
+                                    }
+                                    semester={
+                                      courseDetails[course.CourseNo]
+                                        ?.semester || 0
+                                    }
+                                  />
+                                )}
+                              </div>
+                            ))}
+                            {remainingCourses["GE"]?.courses
+                              .filter(
+                                (course) =>
+                                  course.years === year &&
+                                  course.semester === semester
+                              )
+                              .map((course) => (
+                                <SubjectBox
+                                  BoxComponent={getBoxComponentbyCourseGroup(
+                                    course.subGroup ?? "Free Elective"
+                                  )}
+                                  course_detail={course.detail}
+                                  is_enrolled={false}
+                                  group={course.subGroup ?? "Free Elective"}
+                                  year={course.years}
+                                  semester={course.semester}
+                                />
+                              ))}
+                            {/* Render placeholder boxes if needed */}
+                            <div className="flex flex-col items-center justify-center">
+                              {renderPlaceholder(
+                                highestMaxGE,
+                                countGE[String(year)]?.[String(semester)] || 0
+                              )}
+                            </div>
+                          </div>
+                          <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
+                          <div className="p-2">
+                            {courseGroup?.Courses.map((course) => (
+                              <div
+                                key={course.CourseNo}
+                                className="flex justify-center items-center"
+                              >
+                                {course.mainGroup === "MAJOR" && (
+                                  <SubjectBox
+                                    BoxComponent={getBoxComponentbyCourseGroup(
+                                      course.group ?? "Free Elective"
+                                    )}
+                                    course_detail={
+                                      courseDetails[course.CourseNo]?.detail ||
+                                      {}
+                                    }
+                                    is_enrolled={true}
+                                    group={course.group ?? "Free Elective"}
+                                    year={
+                                      courseDetails[course.CourseNo]?.years || 0
+                                    }
+                                    semester={
+                                      courseDetails[course.CourseNo]
+                                        ?.semester || 0
+                                    }
+                                  />
+                                )}
+                              </div>
+                            ))}
+                            {remainingCourses["MAJOR"]?.courses
+                              .filter(
+                                (course) =>
+                                  course.years === year &&
+                                  course.semester === semester
+                              )
+                              .map((course) => (
+                                <SubjectBox
+                                  BoxComponent={getBoxComponentbyCourseGroup(
+                                    course.subGroup ?? "Free Elective"
+                                  )}
+                                  course_detail={course.detail}
+                                  is_enrolled={false}
+                                  group={course.subGroup ?? "Free Elective"}
+                                  year={course.years}
+                                  semester={course.semester}
+                                />
+                              ))}
+                            <div className="flex flex-col items-center justify-center">
+                              {renderPlaceholder(
+                                highestMaxMAJOR,
+                                countMAJOR[String(year)]?.[String(semester)] ||
+                                  0
+                              )}
+                            </div>
+                          </div>
+                          <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
+                          <div>
+                            {courseGroup?.Courses.map((course) => (
+                              <div
+                                key={course.CourseNo}
+                                className="flex justify-center items-center"
+                              >
+                                {course.mainGroup === "FREE" && (
+                                  <SubjectBox
+                                    BoxComponent={getBoxComponentbyCourseGroup(
+                                      course.group ?? "Free Elective"
+                                    )}
+                                    course_detail={
+                                      courseDetails[course.CourseNo]?.detail ||
+                                      courseDetailsFree[course.CourseNo]
+                                    }
+                                    is_enrolled={true}
+                                    group={course.group ?? "Free Elective"}
+                                    year={
+                                      courseDetails[course.CourseNo]?.years || 0
+                                    }
+                                    semester={
+                                      courseDetails[course.CourseNo]
+                                        ?.semester || 0
+                                    }
+                                  />
+                                )}
+                              </div>
+                            ))}
+                            {remainingCourses["FREE"]?.courses
+                              .filter(
+                                (course) =>
+                                  course.years === year &&
+                                  course.semester === semester
+                              )
+                              .map((course) => (
+                                <SubjectBox
+                                  BoxComponent={getBoxComponentbyCourseGroup(
+                                    course.subGroup ?? "Free Elective"
+                                  )}
+                                  course_detail={course.detail}
+                                  is_enrolled={false}
+                                  group={course.subGroup ?? "Free Elective"}
+                                  year={course.years}
+                                  semester={course.semester}
+                                />
+                              ))}
+                            <div className="flex flex-col items-center justify-center">
+                              {renderPlaceholder(
+                                highestMaxFREE,
+                                countFREE[String(year)]?.[String(semester)] || 0
+                              )}
+                            </div>
+                          </div>
+                          <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
                         </div>
-                        <div className="border border-dashed w-full my-4 border-y-1 border-blue-shadeb2"></div>
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
+              );
+            })}
           </div>
         </div>
       </div>

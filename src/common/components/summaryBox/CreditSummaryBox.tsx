@@ -20,7 +20,7 @@ export const CreditSummary = ({
   <div
     className={`w-auto h-12 p-1 ${bgColor} rounded-tl-2xl rounded-tr-2xl border-b-0 border border-solid ${borderColor} flex items-center gap-8`}
   >
-    <p className="flex flex-row justify-center items-center ml-4">
+    <div className="flex flex-row justify-center items-center ml-4">
       <span className={`${textColor} text-sm flex flex-row items-start `}>
         {earnedCredits >= totalCredits && (
           <CheckBadgeIcon className={`${borderColor} w-8 h-8`} />
@@ -33,7 +33,7 @@ export const CreditSummary = ({
           >{`(${titleEng})`}</span>
         </div>
       </span>
-    </p>
+    </div>
     <div
       className={`ml-auto px-2 mr-2 bg-white rounded-[10px] border border-solid ${borderColor} justify-center items-center  inline-flex`}
     >

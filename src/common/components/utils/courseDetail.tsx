@@ -12,6 +12,7 @@ export interface Courses {
   semester: number;
   years: number;
   detail: CourseDetails;
+  group?: string;
 }
 
 async function getCourseDetailByCourseNo(
