@@ -217,9 +217,11 @@ const CourseInfo = () => {
 
     filteredCourses?.forEach((courseGroup) => {
       courseGroup.Courses.forEach((enrolledCourse) => {
-        const group = getLookupForCourse(enrolledCourse.CourseNo);
-        if (group && groupCredits[group] !== undefined) {
-          groupCredits[group] += parseFloat(enrolledCourse.Credit);
+        if (enrolledCourse.Grade !== "W" && enrolledCourse.Grade !== "F") {
+          const group = getLookupForCourse(enrolledCourse.CourseNo);
+          if (group && groupCredits[group] !== undefined) {
+            groupCredits[group] += parseFloat(enrolledCourse.Credit);
+          }
         }
       });
     });
@@ -242,9 +244,11 @@ const CourseInfo = () => {
 
     enrolledCourses?.forEach((courseGroup) => {
       courseGroup.Courses.forEach((enrolledCourse) => {
-        const group = getLookupForCourse(enrolledCourse.CourseNo);
-        if (group && groupCredits[group] !== undefined) {
-          groupCredits[group] += parseFloat(enrolledCourse.Credit);
+        if (enrolledCourse.Grade !== "W" && enrolledCourse.Grade !== "F") {
+          const group = getLookupForCourse(enrolledCourse.CourseNo);
+          if (group && groupCredits[group] !== undefined) {
+            groupCredits[group] += parseFloat(enrolledCourse.Credit);
+          }
         }
       });
     });
@@ -282,7 +286,10 @@ const CourseInfo = () => {
       return (
         total +
         course.Courses.reduce((sum: number, enrolledCourse: EnrolledCourse) => {
-          return sum + parseFloat(enrolledCourse.Credit);
+          if (enrolledCourse.Grade !== "W" && enrolledCourse.Grade !== "F") {
+            return sum + parseFloat(enrolledCourse.Credit);
+          }
+          return sum;
         }, 0)
       );
     }, 0);

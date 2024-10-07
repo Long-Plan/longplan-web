@@ -1,15 +1,15 @@
-import { ReactNode } from "react";
+import { ReactNode, FC } from "react";
 
-interface Props {
+interface FitContainerProps {
   children?: ReactNode;
 }
 
-function FitContainer({ children }: Props) {
+const FitContainer: FC<FitContainerProps> = ({ children }) => {
   return (
-    <div className="bg-white rounded-[20px] mb-4 pb-4">
+    <div className="w-fit bg-white rounded-2xl mb-4 pb-4">
       <div className="w-full overflow-y-auto">{children}</div>
     </div>
   );
-}
+};
 
 export default FitContainer;
