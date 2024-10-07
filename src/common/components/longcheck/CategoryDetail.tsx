@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getEnrolledCourses } from "../utils/enrolledCourse";
+import { getEnrolledCourses } from "../../apis/enrolledcourse/queries";
 import { coreApi } from "../../../core/connections";
 
 // Define your interfaces here

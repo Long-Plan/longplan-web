@@ -2,7 +2,10 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import useAccountContext from "../../contexts/AccountContext";
 import { CourseDetails } from "../../../types/course";
 import { getCourseDetailByCourseNo } from "../../apis/coursedetails/queries";
-import { MappingEnrolledCourse, EnrolledCourse } from "../utils/enrolledCourse";
+import {
+  EnrolledCourse,
+  MappingEnrolledCourse,
+} from "../../../types/enrolledcourse";
 import { Category, mapCategoriesToTypes } from "../utils/mappingCategory";
 import { getEnrolledCourses } from "../../apis/enrolledcourse/queries";
 

@@ -2,7 +2,10 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import InfoModal from "./InfoModal";
 import { useEffect, useMemo, useState } from "react";
 import { Category, mapCategoriesToTypes } from "../utils/mappingCategory";
-import { EnrolledCourse, MappingEnrolledCourse } from "../utils/enrolledCourse";
+import {
+  EnrolledCourse,
+  MappingEnrolledCourse,
+} from "../../../types/enrolledcourse";
 import { getEnrolledCourses } from "../../apis/enrolledcourse/queries";
 import SummaryBox from "../summaryBox/SummaryBox";
 import SubjectBox from "../subjectbox/subjectbox";

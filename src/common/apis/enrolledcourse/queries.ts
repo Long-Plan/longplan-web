@@ -1,6 +1,6 @@
 import { coreApi } from "../../../core/connections";
 import { TResponse } from "../../../types";
-import { MappingEnrolledCourse } from "../../components/utils/enrolledCourse";
+import { MappingEnrolledCourse } from "../../../types/enrolledcourse";
 import { ApiRouteKey } from "../../constants/keys";
 
 export async function getEnrolledCourses(): Promise<MappingEnrolledCourse[]> {
