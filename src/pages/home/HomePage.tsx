@@ -4,7 +4,7 @@ import Diagram from "../../common/components/longcheck/Diagram";
 
 function HomePage() {
   return (
-    <PageContainer>
+    <PageContainer className="scale-90">
       <Diagram />
     </PageContainer>
   );
