@@ -6,8 +6,10 @@ import {
   EnrolledCourse,
   MappingEnrolledCourse,
 } from "../../../types/enrolledcourse";
-import { Category, mapCategoriesToTypes } from "../utils/mappingCategory";
+import { mapCategoriesToTypes } from "../utils/mappingCategory";
 import { getEnrolledCourses } from "../../apis/enrolledcourse/queries";
+import { semesterMap, yearMap } from "../utils/utils";
+import { Category } from "../../../types/category";
 
 const CourseInfo = () => {
   const { accountData } = useAccountContext();
@@ -343,7 +345,7 @@ const CourseInfo = () => {
                       selectedYearSemester.year === year &&
                       selectedYearSemester.semester === semester
                         ? "bg-blue-shadeb5 text-white"
-                        : "bg-white text-blue-shadeb5 hover:bg-blue-shadeb05 hover:border-blue-shadeb2"
+                        : "bg-white text-blue-shadeb5 hover:bg-blue-shadeb3 hover:text-white hover:border-blue-shadeb2"
                     } border border-solid border-gray-400`}
                   >
                     {"ภาคเรียนที่ " +
@@ -474,21 +476,23 @@ const CourseInfo = () => {
           </table>
         </div>
       </div>
-      <div className="flex flex-row justify-center gap-10">
+      <div className="flex flex-row justify-center gap-10 mt-4">
         {/* Summary for the current year and semester */}
-        <div className="flex flex-col items-center mt-6 bg-blue-shadeb05 p-4 rounded-[20px] shadow-md w-[300px]">
-          <h2 className="text-lg font-bold text-blue-shadeb5 mb-4">
-            year {selectedYearSemester.year} semester{" "}
-            {selectedYearSemester.semester}
+        <div className="flex flex-col items-center mt-6 bg-white p-4 rounded-[20px] border-2 w-[300px]">
+          <h2 className="text-xl text-center font-bold text-blue-shadeb5 bg-blue-shadeb05 px-4 rounded-[20px] w-[200px]">
+            {yearMap[selectedYearSemester.year || "1"]}
           </h2>
+          <p className="text-sm font-light text-blue-shadeb6 mb-4 bg-blue-shadeb05 px-4 rounded-b-[20px]">
+            {semesterMap[selectedYearSemester.semester || "1"]}
+          </p>
           {Object.entries(currentSemesterCourseGroupCredits).map(
             ([group, credits]) => {
               let bgColor = "bg-gray-200";
               let textColor = "text-black";
 
               if (credits === 0) {
-                bgColor = "bg-gray-300";
-                textColor = "text-gray-500";
+                bgColor = "bg-gray-50";
+                textColor = "text-gray-300";
               } else if (
                 group.includes("Learner Person") ||
                 group.includes("GE Elective") ||
@@ -523,17 +527,17 @@ const CourseInfo = () => {
         </div>
 
         {/* Summary for all years */}
-        <div className="flex flex-col items-center mt-6 bg-blue-shadeb05 p-4 rounded-[20px] shadow-md w-[400px]">
-          <h2 className="text-lg font-bold text-blue-shadeb5 mb-4">
-            Total Credits Summary
+        <div className="flex flex-col items-center mt-6 bg-white p-4 rounded-[20px] border-2 w-[450px]">
+          <h2 className="text-xl font-bold text-blue-shadeb5 mb-6 bg-blue-shadeb05 px-4 rounded-[20px]">
+            สรุปหน่วยกิตทั้งหมด
           </h2>
           {Object.entries(allYearCourseGroupCredits).map(([group, credits]) => {
             let bgColor = "bg-gray-200";
             let textColor = "text-black";
 
             if (credits === 0) {
-              bgColor = "bg-gray-300";
-              textColor = "text-gray-500";
+              bgColor = "bg-gray-50";
+              textColor = "text-gray-300";
             } else if (
               group.includes("Learner Person") ||
               group.includes("GE Elective") ||
@@ -563,7 +567,19 @@ const CourseInfo = () => {
                 </span>
               </div>
             );
-          })}
+          })}{" "}
+          <div
+            className={`flex justify-between items-center mb-2 w-full p-2 rounded-[10px] bg-amber-400`}
+          >
+            <span className={`text-sm font-medium `}>Total Credits</span>
+            <span className={`text-sm font-semibold `}>
+              {Object.values(allYearCourseGroupCredits).reduce(
+                (acc, credits) => acc + credits,
+                0
+              )}{" "}
+              credits
+            </span>
+          </div>
         </div>
       </div>
     </>

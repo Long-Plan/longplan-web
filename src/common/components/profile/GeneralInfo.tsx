@@ -39,14 +39,14 @@ const GeneralInfo = () => {
               alt="Profile"
             />
             <div className="items-center justify-center">
-              <p className="text-lg font-medium mb-4 text-white">
+              <p className="text-lg font-medium ml-4 mb-4 text-white">
                 {accountData?.userData?.firstname}{" "}
                 {accountData?.userData?.lastname}
               </p>
-              <h1 className="text-lg font-medium mb-4 text-white">
+              <h1 className="text-lg font-medium ml-4 mb-4 text-white">
                 {accountData?.studentData?.code}
               </h1>
-              <h4 className="px-4 text-sm font-normal bg-blue-shadeb5 rounded-lg text-white w-min-full h-[20px] text-center">
+              <h4 className="px-4 text-sm font-normal bg-blue-shadeb5 rounded-lg ml-4 text-white w-min-full h-[20px] text-center">
                 {major || "Loading..."}
               </h4>
             </div>

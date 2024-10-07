@@ -7,7 +7,7 @@ interface Props {
 function FitContainer({ children }: Props) {
   return (
     <div className="bg-white rounded-[20px] mb-4 pb-4">
-      <div className="w-full overflow-y-auto p-4">{children}</div>
+      <div className="w-full overflow-y-auto">{children}</div>
     </div>
   );
 }

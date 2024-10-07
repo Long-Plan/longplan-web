@@ -12,6 +12,10 @@ export const enum ApiRouteKey {
   EnrolledCourses = "/enrolled-courses",
   CourseDetails = "/course-details",
   CurriculaCourses = "/curricula/courses",
+  StudentCurricula = "/student_curricula",
+  Majors = "/majors",
+  Categories = "/categories",
+  CategoriesTypes = "/categories/types",
 }
 
 export const enum ClientRouteKey {

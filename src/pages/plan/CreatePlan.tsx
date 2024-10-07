@@ -147,13 +147,13 @@ function CreatePage() {
           <div onClick={handleToggle}>
             {isSetting ? (
               <div className="flex bg-[#4351cc] rounded-full justify-center items-center gap-2 px-4 py-0.5">
-                <img src="/public/imgs/Save.svg" alt="" />
+                <img src="/imgs/Save.svg" alt="" />
                 <div className="text-center text-white text-xl font-medium">
                   บันทึก
                 </div>
               </div>
             ) : (
-              <img src="/public/imgs/Setting.svg" alt="" />
+              <img src="/imgs/Setting.svg" alt="" />
             )}
           </div>
         </div>
@@ -189,7 +189,7 @@ function CreatePage() {
                       </div>
                     )}
                     <img
-                      src="/public/imgs/Delect.svg"
+                      src="/imgs/Delect.svg"
                       alt=""
                       onClick={() => handleDelete(plan.id)}
                       className="w-6 sm:w-7 md:w-7 lg:w-8 xl:w-8"

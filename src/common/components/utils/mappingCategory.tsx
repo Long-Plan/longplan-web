@@ -1,96 +1,18 @@
-import { coreApi } from "../../../core/connections";
-
-interface Relationship {
-  id: number;
-  child_category_id: number;
-  require_all: boolean;
-  position: number;
-  question_id: number | null;
-  choice_id: number | null;
-  cross_category_id: number | null;
-}
-
-interface Requirement {
-  id: number;
-  regex: string;
-  credit: number;
-}
-
-interface ChildCategory {
-  id: number;
-  name_th: string;
-  name_en: string;
-  at_least: boolean;
-  credit: number;
-  type_id: number;
-  note: string;
-  created_at: string;
-  updated_at: string;
-  requirements: Requirement[] | null;
-  relationships: Relationship[] | null;
-  child_categories: ChildCategory[] | null;
-  courses: string[] | null;
-}
-
-export interface Category {
-  id: number;
-  name_th: string;
-  name_en: string;
-  at_least: boolean;
-  credit: number;
-  type_id: number;
-  note: string;
-  created_at: string;
-  updated_at: string;
-  requirements: Requirement[] | null;
-  relationships: Relationship[] | null;
-  child_categories: ChildCategory[] | null;
-  courses: string[] | null;
-}
-
-interface CategoriesAPIResponse {
-  success: boolean;
-  message: string;
-  result: Category;
-}
-
-interface CategoryType {
-  id: number;
-  name_th: string;
-  name_en: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface CategoryTypesAPIResponse {
-  success: boolean;
-  message: string;
-  result: CategoryType[];
-}
+import { Category, CategoryType } from "../../../types/category";
+import {
+  getAllTypes,
+  getCategoryByCurriculumID,
+} from "../../apis/category/queries";
 
 const fetchCategoriesAndTypes = async (): Promise<{
   categories: Category | null;
   types: CategoryType[] | null;
 }> => {
   try {
-    const [categoryResponse, typesResponse] = await Promise.all([
-      coreApi
-        .get<CategoriesAPIResponse>("/categories/1")
-        .then((res) => res.data),
-      coreApi
-        .get<CategoryTypesAPIResponse>("/categories/types")
-        .then((res) => res.data),
-    ]);
+    const categoryData = await getCategoryByCurriculumID(1); // Fetch categories by curriculum ID
+    const typesData = await getAllTypes(); // Fetch all types
 
-    // Check if the responses are successful
-    if (!categoryResponse.success || !typesResponse.success) {
-      throw new Error("Failed to fetch data from API");
-    }
-
-    const categoryData: CategoriesAPIResponse = categoryResponse;
-    const typesData: CategoryTypesAPIResponse = typesResponse;
-
-    return { categories: categoryData.result, types: typesData.result };
+    return { categories: categoryData, types: typesData };
   } catch (error) {
     console.error("Error fetching categories or types", error);
     return { categories: null, types: null }; // Return null on error
