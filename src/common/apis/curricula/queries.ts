@@ -15,3 +15,16 @@ export async function getAllByMajorID(
       .catch(reject);
   });
 }
+
+export async function getCurriculaByMajorID(
+  major_id: number
+): Promise<TResponse<Curriculum>> {
+  return new Promise((resolve, reject) => {
+    coreApi
+      .get<TResponse<Curriculum>>(`${ApiRouteKey.Curricula}/major/${major_id}`)
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch(reject);
+  });
+}

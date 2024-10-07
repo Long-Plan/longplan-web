@@ -59,12 +59,12 @@ const Navbar: React.FC<NavbarProps> = () => {
           "/imgs/Home_p.svg"
         )}
         <hr className="bg-gray-100 opacity-100 mt-4" />
-        {renderNavItem(
+        {/* {renderNavItem(
           ClientRouteKey.Plan,
           "/imgs/Create.svg",
           "/imgs/Create_p.svg",
           "Plan"
-        )}
+        )} */}
         {renderNavItem(
           ClientRouteKey.Profile,
           "/imgs/Profile.svg",

@@ -8,13 +8,13 @@ import {
 } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
-import { coreApi } from "../../../../core/connections";
 import toast from "react-hot-toast";
 import { putStudent } from "../../../apis/student/queries";
 import { ClientRouteKey } from "../../../constants/keys";
 import useAnnouncementContext from "../../../contexts/AnnouncementContext";
 import { getMajors } from "../../../apis/major/queries";
 import { Major } from "../../../../types/major";
+import { getCurriculaByMajorID } from "../../../apis/curricula/queries";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -27,7 +27,7 @@ export default function PlanSettingPopup({
   mode: boolean;
   isFirstTime?: boolean;
 }) {
-  const [majors, setMajors] = useState<{ id: number; name_en: string }[]>([]);
+  const [majors, setMajors] = useState<Major[]>([]);
   const [programs, setPrograms] = useState<
     { id: number; name_th: string; major_id: number }[]
   >([]);
@@ -63,6 +63,9 @@ export default function PlanSettingPopup({
             response.map((major: Major) => ({
               id: major.id,
               name_en: major.name_en,
+              name_th: major.name_th,
+              created_at: major.created_at,
+              updated_at: major.updated_at,
             }))
           );
           setSelectedMajor(response[0]); // Set the default selection to the first major
@@ -80,26 +83,27 @@ export default function PlanSettingPopup({
     if (selectedMajor) {
       const fetchCurriculum = async () => {
         try {
-          const response = await coreApi
-            .get(`/curricula/major/${selectedMajor.id}`)
-            .then((res) => res.data);
+          const response = await getCurriculaByMajorID(selectedMajor.id);
           const data = response;
           if (data.success) {
-            const fetchedPrograms = data.result.map((program: any) => ({
-              id: program.id, // Program ID
-              name_th: program.name_th,
-              major_id: program.major_id,
-            }));
-            const curriculumQuestions = data.result[0].curriculum_questions.map(
-              (question: any) => ({
-                id: question.id,
-                name_en: question.name_en,
-                choices: question.choices.map((choice: any) => ({
-                  id: choice.id,
-                  name_en: choice.name_en,
-                })),
-              })
-            );
+            const fetchedPrograms = Array.isArray(data.result)
+              ? data.result.map((program: any) => ({
+                  id: program.id, // Program ID
+                  name_th: program.name_th,
+                  major_id: program.major_id,
+                }))
+              : [];
+            const curriculumQuestions =
+              Array.isArray(data.result) && data.result.length > 0
+                ? data.result[0].curriculum_questions.map((question: any) => ({
+                    id: question.id,
+                    name_en: question.name_en,
+                    choices: question.choices.map((choice: any) => ({
+                      id: choice.id,
+                      name_en: choice.name_en,
+                    })),
+                  }))
+                : [];
             setPrograms(fetchedPrograms);
             setChoices(curriculumQuestions);
 

@@ -51,6 +51,8 @@ function Diagram() {
   >({});
   const [error, setError] = useState<string | null>(null);
   const [showSemester3, setShowSemester3] = useState(true); // Toggle state for semester 3
+  const [questionId, setQuestionId] = useState<number>(1);
+  const [choiceId, setChoiceId] = useState<number>(1);
 
   // Fetch initial data: enrolled courses and categories
   useEffect(() => {
@@ -58,7 +60,7 @@ function Diagram() {
       try {
         const [enrolledResponse, categoryData] = await Promise.all([
           getEnrolledCourses(),
-          mapCategoriesToTypes(),
+          mapCategoriesToTypes(questionId, choiceId),
         ]);
         setEnrolledCourses(enrolledResponse);
         setCategory(categoryData);
@@ -72,7 +74,7 @@ function Diagram() {
     };
 
     fetchData();
-  }, []);
+  }, [questionId, choiceId]);
 
   console.log(category);
 
@@ -292,9 +294,11 @@ function Diagram() {
 
     enrolledCourses?.forEach((courseGroup) => {
       courseGroup.Courses.forEach((enrolledCourse) => {
-        const group = getLookupForCourse(enrolledCourse.CourseNo);
-        if (group && groupCredits[group] !== undefined) {
-          groupCredits[group] += parseFloat(enrolledCourse.Credit);
+        if (enrolledCourse.Grade !== "F" && enrolledCourse.Grade !== "W") {
+          const group = getLookupForCourse(enrolledCourse.CourseNo);
+          if (group && groupCredits[group] !== undefined) {
+            groupCredits[group] += parseFloat(enrolledCourse.Credit);
+          }
         }
       });
     });
@@ -322,7 +326,7 @@ function Diagram() {
       "Active Citizen": ["Active Citizen"],
       "GE Elective": ["Elective from 3 Categories"],
       Core: ["Core Courses"],
-      "Major Required": ["Required Courses"],
+      "Major Required": ["2.2.1 Required Courses"],
       "Major Elective": ["Major Electives"],
       "Free Elective": ["Free Electives"],
     };
@@ -399,11 +403,13 @@ function Diagram() {
     // Calculate earnedCredits from enrolled courses
     enrolledCourses?.forEach((courseGroup) => {
       courseGroup.Courses.forEach((enrolledCourse) => {
-        const group = getLookupForCourse(enrolledCourse.CourseNo);
-        if (group && groupCredits[group]) {
-          groupCredits[group].earnedCredits += parseFloat(
-            enrolledCourse.Credit
-          );
+        if (enrolledCourse.Grade !== "F" && enrolledCourse.Grade !== "W") {
+          const group = getLookupForCourse(enrolledCourse.CourseNo);
+          if (group && groupCredits[group]) {
+            groupCredits[group].earnedCredits += parseFloat(
+              enrolledCourse.Credit
+            );
+          }
         }
       });
     });
@@ -415,7 +421,7 @@ function Diagram() {
       "Active Citizen": ["Active Citizen"],
       "GE Elective": ["Elective from 3 Categories"],
       Core: ["Core Courses"],
-      "Major Required": ["Required Courses"],
+      "Major Required": ["2.2.1 Required Courses"],
       "Major Elective": ["Major Electives"],
       "Free Elective": ["Free Electives"],
     };
@@ -431,11 +437,12 @@ function Diagram() {
 
     const calculateCreditsFromCategory = (currentCategory: Category) => {
       const group = findGroupByCategoryName(currentCategory.name_en);
+
       if (group && groupCredits[group]) {
         groupCredits[group].totalCredit += currentCategory.credit;
       }
 
-      // Traverse child categories if they exist
+      // Recursively traverse child categories
       if (currentCategory.child_categories) {
         currentCategory.child_categories.forEach((childCategory) => {
           calculateCreditsFromCategory(childCategory);
@@ -446,6 +453,13 @@ function Diagram() {
     if (category) {
       calculateCreditsFromCategory(category);
     }
+
+    // Adjust earnedCredits if it exceeds totalCredit
+    Object.values(groupCredits).forEach((credits) => {
+      if (credits.earnedCredits > credits.totalCredit) {
+        credits.earnedCredits = credits.totalCredit;
+      }
+    });
 
     return groupCredits;
   }, [enrolledCourses, category]);
@@ -567,13 +581,17 @@ function Diagram() {
     (categoryCredits?.["Active Citizen"] || 0) +
     (categoryCredits?.["GE Elective"] || 0);
 
-  const totalGeEarnedCredits =
+  let totalGeEarnedCredits =
     allYearCourseGroupCredits["GE Elective"] +
     allYearCourseGroupCredits["Learner Person"] +
     allYearCourseGroupCredits["Innovative Co-creator"] +
     allYearCourseGroupCredits["Active Citizen"];
 
-  const totalCoreAndMajorEarnedCredits =
+  if (totalGeEarnedCredits > totalGeCredits) {
+    totalGeEarnedCredits = totalGeCredits;
+  }
+
+  let totalCoreAndMajorEarnedCredits =
     allYearCourseGroupCredits["Core"] +
     allYearCourseGroupCredits["Major Required"] +
     allYearCourseGroupCredits["Major Elective"];
@@ -582,6 +600,18 @@ function Diagram() {
     (categoryCredits?.["Core"] || 0) +
     (categoryCredits?.["Major Required"] || 0) +
     (categoryCredits?.["Major Elective"] || 0);
+
+  if (totalCoreAndMajorEarnedCredits > totalCoreAndMajorRequiredCredits) {
+    totalCoreAndMajorEarnedCredits = totalCoreAndMajorRequiredCredits;
+  }
+
+  const totalFreeElectiveCredits = categoryCredits?.["Free Elective"] || 0;
+
+  let totalFreeEarnedCredits = allYearCourseGroupCredits["Free Elective"];
+
+  if (totalFreeEarnedCredits > totalFreeElectiveCredits) {
+    totalFreeEarnedCredits = totalFreeElectiveCredits;
+  }
 
   // console.log(allYearCourseGroupCredits);
   // console.log(categoryCredits);
@@ -803,21 +833,16 @@ function Diagram() {
     return <div>Error: {error}</div>;
   }
 
-  // const heightDiv = 54.7;
+  console.log(combinedCredits);
+  console.log(categoryCredits);
 
   return (
     <div>
-      <div className="mb-14">
+      <div className="relative items-center justify-center">
         <PlanSelection
-          onPlanChange={function (_: {
-            id: number;
-            name: string;
-            major: string;
-            year: string;
-            plan: string;
-            default: boolean;
-          }): void {
-            throw new Error("Function not implemented.");
+          onChoiceChange={(questionId, choiceId) => {
+            setChoiceId(choiceId);
+            setQuestionId(questionId);
           }}
         />
       </div>
@@ -1163,7 +1188,7 @@ function Diagram() {
                               >
                                 {semesterMap[String(3)]}
                               </p>
-                              <div className="py-4 px-2 bg-yellow-50 bg-opacity-50">
+                              <div className="p-4 bg-yellow-50 bg-opacity-50">
                                 {/* Render enrolled courses for the current year and semester */}
                                 {yearGroup?.semesters
                                   .filter((group) => group.Semester === "3")
@@ -1229,7 +1254,7 @@ function Diagram() {
                                 </div>
                               </div>
                               <div className="border border-dashed w-full border-y-1 border-blue-shadeb2"></div>
-                              <div className="py-4 px-2 bg-blue-100 bg-opacity-25">
+                              <div className="p-4 bg-blue-100 bg-opacity-25">
                                 {/* Render enrolled courses for the current year and semester */}
                                 {yearGroup?.semesters
                                   .filter((group) => group.Semester === "3")
@@ -1398,10 +1423,8 @@ function Diagram() {
             totalGeEarnedCredits={totalGeEarnedCredits}
             totalCoreAndMajorEarnedCredits={totalCoreAndMajorEarnedCredits}
             totalCoreAndMajorRequiredCredits={totalCoreAndMajorRequiredCredits}
-            totalFreeElectiveCredits={categoryCredits?.["Free Elective"] || 0}
-            totalFreeEarnedCredits={
-              allYearCourseGroupCredits["Free Elective"] || 0
-            }
+            totalFreeElectiveCredits={totalFreeElectiveCredits}
+            totalFreeEarnedCredits={totalFreeEarnedCredits}
           />
         </FitContainer>
       </div>
