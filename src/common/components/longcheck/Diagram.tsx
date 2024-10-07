@@ -1,8 +1,4 @@
-import {
-  ArrowsPointingInIcon,
-  ArrowsPointingOutIcon,
-  QuestionMarkCircleIcon,
-} from "@heroicons/react/20/solid";
+import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import InfoModal from "./InfoModal";
 import { useEffect, useMemo, useState } from "react";
 import { Category, mapCategoriesToTypes } from "../utils/mappingCategory";
