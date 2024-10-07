@@ -21,7 +21,7 @@ function Term() {
         setComponent(null);
         setIsVisible(false);
 
-        // Refresh the page after successful submission
+        toast.success("ยืนยันข้อกำหนดและเงื่อนไขการให้บริการเรียบร้อยแล้ว");
         window.location.reload();
       } catch {
         toast.error("เกิดข้อผิดพลาดในการยืนยันข้อกำหนดและเงื่อนไขการให้บริการ");

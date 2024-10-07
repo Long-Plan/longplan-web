@@ -11,17 +11,19 @@ import { useNavigate } from "react-router-dom";
 import { coreApi } from "../../../../core/connections";
 import toast from "react-hot-toast";
 import { putStudent } from "../../../apis/student/queries";
+import { ClientRouteKey } from "../../../constants/keys";
+import useAnnouncementContext from "../../../contexts/AnnouncementContext";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function PlanSettingPopup({
-  onClose,
   mode,
+  isFirstTime,
 }: {
-  onClose: () => void;
   mode: boolean;
+  isFirstTime?: boolean;
 }) {
   const [majors, setMajors] = useState<{ id: number; name_en: string }[]>([]);
   const [programs, setPrograms] = useState<
@@ -45,6 +47,7 @@ export default function PlanSettingPopup({
   const [selectedChoices, setSelectedChoices] = useState<{
     [key: number]: string;
   }>({});
+  const { setComponent, setIsVisible } = useAnnouncementContext();
 
   const navigate = useNavigate(); // Get navigate function from useNavigate hook
 
@@ -131,8 +134,11 @@ export default function PlanSettingPopup({
         major_id: selectedMajor.id,
         is_term_accepted: true,
       });
+      setComponent(null);
+      setIsVisible(false);
 
       toast.success("อัพเดทข้อมูลภาควิชาสำเร็จ");
+      window.location.reload();
     } catch {
       toast.error("เกิดข้อผิดพลาดในการอัพเดทข้อมูลภาควิชา");
     }
@@ -149,9 +155,13 @@ export default function PlanSettingPopup({
     //   })),
     // };
     // console.log("Form submitted with data:", formData);
+    if (isFirstTime) {
+      navigate(ClientRouteKey.Home);
+    }
 
     if (mode) {
-      onClose();
+      setComponent(null);
+      setIsVisible(false);
     } else {
       navigate(-1);
     }

@@ -19,6 +19,7 @@ import { useEffect } from "react";
 import Term from "./common/components/dialogues/contents/Term";
 import FixedLayer from "./common/components/layer/fixlayer";
 import DebugPanel from "./debug/DebugPanel";
+import PlanSettingPopup from "./common/components/dialogues/contents/settingpopup";
 
 function App() {
   const navigate = useNavigate();
@@ -31,6 +32,10 @@ function App() {
       if (!accountData.studentData?.is_term_accepted) {
         setIsVisible(true);
         setComponent(<Term />);
+      }
+      if (!accountData.studentData?.major_id) {
+        setIsVisible(true);
+        setComponent(<PlanSettingPopup mode={true} />);
       }
     }
   }, [accountData, isVisible, setComponent, setIsVisible]);
