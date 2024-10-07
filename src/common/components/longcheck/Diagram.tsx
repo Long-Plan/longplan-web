@@ -2,12 +2,8 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import InfoModal from "./InfoModal";
 import { useEffect, useMemo, useState } from "react";
 import { Category, mapCategoriesToTypes } from "../utils/mappingCategory";
-import {
-  EnrolledCourse,
-  getEnrolledCourses,
-  MappingEnrolledCourse,
-} from "../utils/enrolledCourse";
-
+import { EnrolledCourse, MappingEnrolledCourse } from "../utils/enrolledCourse";
+import { getEnrolledCourses } from "../../apis/enrolledcourse/queries";
 import SummaryBox from "../summaryBox/SummaryBox";
 import SubjectBox from "../subjectbox/subjectbox";
 import {
@@ -20,12 +16,11 @@ import {
   MajorBox,
   UncountedBox,
 } from "../subjectbox/stylebox";
-import { CourseDetails } from "../dialogues/contents/coursedetail";
+import { Course, CourseDetails } from "../../../types/course";
 import {
-  Courses,
   getCourseDetailByCourseNo,
   getCourseDetailByCurriculumID,
-} from "../utils/courseDetail";
+} from "../../apis/coursedetails/queries";
 import { semesterMap, yearMap } from "../utils/utils";
 import BlankBox from "../subjectbox/blankbox";
 import CreditBox from "../subjectbox/creditbox";
@@ -43,7 +38,7 @@ function Diagram() {
   const [enrolledCourses, setEnrolledCourses] = useState<
     MappingEnrolledCourse[]
   >([]);
-  const [courseDetails, setCourseDetails] = useState<Record<string, Courses>>(
+  const [courseDetails, setCourseDetails] = useState<Record<string, Course>>(
     {}
   );
   const [courseDetailsFree, setCourseDetailsFree] = useState<
@@ -56,11 +51,11 @@ function Diagram() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [enrolledData, categoryData] = await Promise.all([
+        const [enrolledResponse, categoryData] = await Promise.all([
           getEnrolledCourses(),
           mapCategoriesToTypes(),
         ]);
-        setEnrolledCourses(enrolledData);
+        setEnrolledCourses(enrolledResponse);
         setCategory(categoryData);
       } catch (err) {
         setError(
@@ -492,7 +487,7 @@ function Diagram() {
     const remaining: Record<
       string,
       {
-        courses: (Courses & {
+        courses: (Course & {
           subGroup: string;
           mainGroup: string;
           year: number;

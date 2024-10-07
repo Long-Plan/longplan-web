@@ -7,6 +7,11 @@ export const enum ApiRouteKey {
   SignOut = "/oauth/signout",
   Me = "/oauth/me",
   Student = "/students",
+  Curricula = "/curricula",
+  CurriculaMajor = "/curricula/major",
+  EnrolledCourses = "/enrolled-courses",
+  CourseDetails = "/course-details",
+  CurriculaCourses = "/curricula/courses",
 }
 
 export const enum ClientRouteKey {

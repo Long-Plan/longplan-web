@@ -1,7 +1,31 @@
+import { useEffect, useState } from "react";
 import useAccountContext from "../../contexts/AccountContext";
+import { getAllByMajorID } from "../../apis/curricula/queries";
 
 const GeneralInfo = () => {
   const { accountData } = useAccountContext();
+  const [major, setMajor] = useState<string>("");
+
+  useEffect(() => {
+    const fetchMajor = async () => {
+      if (accountData?.studentData?.major_id) {
+        try {
+          const response = await getAllByMajorID(
+            accountData.studentData.major_id
+          );
+          console.log(response.result);
+          if (!Array.isArray(response.result) || response.result.length === 0) {
+            return;
+          }
+          setMajor(response.result[0]?.name_th);
+        } catch (error) {
+          console.error("Failed to fetch major:", error);
+        }
+      }
+    };
+
+    fetchMajor();
+  }, [accountData]);
 
   return (
     <div className="flex bg-[#ECEEFA] rounded-t-[20px] shadow-[20px] items-center justify-center bg-cover bg-bottom bg-[url('/imgs/ClockBG.svg')] w-[1300px] h-full p-8">
@@ -23,7 +47,7 @@ const GeneralInfo = () => {
                 {accountData?.studentData?.code}
               </h1>
               <h4 className="px-4 text-sm font-normal bg-blue-shadeb5 rounded-lg text-white w-min-full h-[20px] text-center">
-                {accountData?.studentData?.major_id || "ไม่มีข้อมูล"}
+                {major || "Loading..."}
               </h4>
             </div>
           </div>

@@ -1,8 +1,5 @@
-// Function to fetch categories and types with proper typing
-
 import { coreApi } from "../../../core/connections";
 
-// Interface for Relationships within categories
 interface Relationship {
   id: number;
   child_category_id: number;
@@ -13,14 +10,12 @@ interface Relationship {
   cross_category_id: number | null;
 }
 
-// Interface for Requirements within categories
 interface Requirement {
   id: number;
   regex: string;
   credit: number;
 }
 
-// Interface for Child Categories and Courses
 interface ChildCategory {
   id: number;
   name_th: string;
@@ -37,7 +32,6 @@ interface ChildCategory {
   courses: string[] | null;
 }
 
-// Interface for the main Category
 export interface Category {
   id: number;
   name_th: string;
@@ -54,14 +48,12 @@ export interface Category {
   courses: string[] | null;
 }
 
-// Main response interface for Categories
 interface CategoriesAPIResponse {
   success: boolean;
   message: string;
   result: Category;
 }
 
-// Interface for each type of category
 interface CategoryType {
   id: number;
   name_th: string;
@@ -70,7 +62,6 @@ interface CategoryType {
   updated_at: string;
 }
 
-// Main response interface for Category Types
 interface CategoryTypesAPIResponse {
   success: boolean;
   message: string;
@@ -141,21 +132,7 @@ export const mapCategoriesToTypes = async (): Promise<
     {}
   );
 
-  // Recursively group categories by their type
   const groupedCategories = groupCategoriesByType(categories, typesMap);
 
   return groupedCategories;
 };
-
-// Example usage of the function (for debugging purposes)
-// (async () => {
-//   const groupedCategories = await mapCategoriesToTypes();
-
-//   // Output the result to check the structure
-//   if (groupedCategories) {
-//     console.log(
-//       "Grouped Categories:",
-//       JSON.stringify(groupedCategories, null, 2)
-//     );
-//   }
-// })();

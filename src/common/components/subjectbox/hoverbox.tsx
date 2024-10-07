@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { BoxProps } from "./stylebox";
-import CourseDetailsPopup, {
-  CourseDetails,
-} from "../dialogues/contents/coursedetail";
+import CourseDetailsPopup from "../dialogues/contents/coursedetail";
+import { CourseDetails } from "../../../types/course";
 
 export interface HoverableBoxProps {
   BoxComponent: React.FC<BoxProps>;

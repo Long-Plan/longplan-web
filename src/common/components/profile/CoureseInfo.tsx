@@ -1,13 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import useAccountContext from "../../contexts/AccountContext";
-import { CourseDetails } from "../dialogues/contents/coursedetail";
-import { getCourseDetailByCourseNo } from "../utils/courseDetail";
-import {
-  MappingEnrolledCourse,
-  getEnrolledCourses,
-  EnrolledCourse,
-} from "../utils/enrolledCourse";
+import { CourseDetails } from "../../../types/course";
+import { getCourseDetailByCourseNo } from "../../apis/coursedetails/queries";
+import { MappingEnrolledCourse, EnrolledCourse } from "../utils/enrolledCourse";
 import { Category, mapCategoriesToTypes } from "../utils/mappingCategory";
+import { getEnrolledCourses } from "../../apis/enrolledcourse/queries";
 
 const CourseInfo = () => {
   const { accountData } = useAccountContext();
@@ -33,9 +30,9 @@ const CourseInfo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const enrolledData = await getEnrolledCourses();
+        const enrolledResponse = await getEnrolledCourses();
         const categoryData = await mapCategoriesToTypes();
-        setEnrolledCourses(enrolledData);
+        setEnrolledCourses(enrolledResponse);
         setCategory(categoryData);
         console.log(categoryData);
       } catch (err) {

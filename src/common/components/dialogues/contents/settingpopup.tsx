@@ -9,6 +9,8 @@ import {
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
 import { coreApi } from "../../../../core/connections";
+import toast from "react-hot-toast";
+import { putStudent } from "../../../apis/student/queries";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -32,7 +34,6 @@ export default function PlanSettingPopup({
       choices: { id: number; name_en: string }[];
     }[]
   >([]);
-
   const [selectedMajor, setSelectedMajor] = useState<{
     id: number;
     name_en: string;
@@ -119,25 +120,35 @@ export default function PlanSettingPopup({
     }
   }, [selectedMajor]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedMajor || !selectedProgram) {
       console.error("Major or program is not selected properly.");
       return;
     }
 
-    // Construct the formData with selected IDs
-    const formData = {
-      majorId: selectedMajor.id, // ID of the selected major
-      programId: selectedProgram.id, // ID of the selected program
-      choices: choices.map((question) => ({
-        questionId: question.id, // Question ID
-        choiceId: question.choices.find(
-          (choice) => choice.name_en === selectedChoices[question.id]
-        )?.id, // Find the choice ID based on selected choice
-      })),
-    };
+    try {
+      await putStudent({
+        major_id: selectedMajor.id,
+        is_term_accepted: true,
+      });
 
-    console.log("Form submitted with data:", formData);
+      toast.success("อัพเดทข้อมูลภาควิชาสำเร็จ");
+    } catch {
+      toast.error("เกิดข้อผิดพลาดในการอัพเดทข้อมูลภาควิชา");
+    }
+
+    // Construct the formData with selected IDs
+    // const formData = {
+    //   majorId: selectedMajor.id, // ID of the selected major
+    //   programId: selectedProgram.id, // ID of the selected program
+    //   choices: choices.map((question) => ({
+    //     questionId: question.id, // Question ID
+    //     choiceId: question.choices.find(
+    //       (choice) => choice.name_en === selectedChoices[question.id]
+    //     )?.id, // Find the choice ID based on selected choice
+    //   })),
+    // };
+    // console.log("Form submitted with data:", formData);
 
     if (mode) {
       onClose();
