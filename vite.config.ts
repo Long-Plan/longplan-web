@@ -18,6 +18,7 @@ function loadEnv(mode: string) {
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isDevelopmentMode = mode === "development" || mode === "dev";
+  const isLocalDevelopmentMode = mode === "dev";
 
   loadEnv(mode);
 
@@ -29,6 +30,7 @@ export default defineConfig(({ mode }) => {
       IS_PRODUCTION_MODE: `${!isDevelopmentMode}`,
       API_ENDPOINT_URL: `"${process.env["API_ENDPOINT_URL"]}"`,
       CMU_OAUTH_URL: `"${process.env["CMU_OAUTH_URL"]}"`,
+      IS_LOCAL_DEVELOPMENT: `${isLocalDevelopmentMode}`,
     },
     server: {
       host: process.env["HOST"] || "127.0.0.1",
