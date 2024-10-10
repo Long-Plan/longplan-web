@@ -20,6 +20,7 @@ import Term from "./common/components/dialogues/contents/Term";
 import FixedLayer from "./common/components/layer/fixlayer";
 import DebugPanel from "./debug/DebugPanel";
 import PlanSettingPopup from "./common/components/dialogues/contents/settingpopup";
+import { config } from "./core/config";
 
 function App() {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ function App() {
       <Toaster />
       {isVisible && <Announcement />}
       <FixedLayer>
-        <DebugPanel isDisplayed={false} routes={routes} />
+        <DebugPanel isDisplayed={!config.isProductionMode} routes={routes} />
       </FixedLayer>
       <ReactFlowProvider>
         {status === "loading" ? null : status === "success" ? (

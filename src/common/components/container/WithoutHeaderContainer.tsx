@@ -1,4 +1,4 @@
-import { ReactNode, FC } from "react";
+import { FC, ReactNode } from "react";
 
 interface Props {
   children?: ReactNode;
@@ -6,8 +6,8 @@ interface Props {
 
 const ContainerWithoutHeader: FC<Props> = ({ children }) => {
   return (
-    <div className="bg-white rounded-2xl mb-4 max-w-screen-xl">
-      <div className="p-6 md:p-10 w-full overflow-y-auto">{children}</div>
+    <div className="bg-white rounded-2xl max-w-screen-xl mx-auto">
+      <div className="p-4 md:p-8 w-full overflow-y-auto">{children}</div>
     </div>
   );
 };
