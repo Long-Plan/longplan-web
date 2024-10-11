@@ -230,11 +230,45 @@ function Diagram() {
           Promise.all(courseNos.map(getCourseDetailByCourseNo)),
         ]);
 
-        // Organize curriculum details by course number
+        // Organize curriculum details by course number for only enrolled courses
         const courseDetailsMap: Record<string, any> = {};
-        curriculumDetails.forEach((course) => {
-          courseDetailsMap[course.course_no] = course;
+        enrolledCourses.forEach((courseGroup) => {
+          courseGroup.Courses.forEach((course) => {
+            const detail = curriculumDetails.find(
+              (curriculumCourse) =>
+                curriculumCourse.course_no === course.CourseNo
+            );
+            if (detail) {
+              courseDetailsMap[course.CourseNo] = detail;
+            }
+          });
         });
+
+        // Include courses that are in the category but not enrolled
+        const addCategoryCourses = (category: Category) => {
+          if (category.courses) {
+            category.courses.forEach((courseNo) => {
+              if (!courseDetailsMap[courseNo]) {
+                const detail = curriculumDetails.find(
+                  (curriculumCourse) => curriculumCourse.course_no === courseNo
+                );
+                if (detail) {
+                  courseDetailsMap[courseNo] = detail;
+                }
+              }
+            });
+          }
+          if (category.child_categories) {
+            category.child_categories.forEach((childCategory) => {
+              addCategoryCourses(childCategory as Category);
+            });
+          }
+        };
+
+        if (category) {
+          addCategoryCourses(category);
+        }
+
         setCourseDetails(courseDetailsMap);
 
         // Map the free course details by course number
@@ -833,8 +867,8 @@ function Diagram() {
     return <div>Error: {error}</div>;
   }
 
-  console.log(combinedCredits);
-  console.log(categoryCredits);
+  console.log(courseDetails);
+  console.log(remainingCourses);
 
   return (
     <div>
@@ -939,7 +973,7 @@ function Diagram() {
                     return (
                       <div
                         key={year}
-                        className="flex flex-col border rounded-[20px]"
+                        className="flex flex-col border border-b-0 rounded-[20px]"
                       >
                         <h1 className="text-center py-1 font-semibold">
                           {yearMap[String(year)]}
