@@ -32,6 +32,7 @@ jobs:
             docker build --platform linux/amd64 -t ${{ env.APP_NAME }} /home/longplan/frontend/main/
             docker run -d -p 3000:80 --restart unless-stopped --name ${{ env.APP_NAME }} ${{ env.APP_NAME }}
             find /home/longplan/frontend/main/ -mindepth 1 ! -path "/home/longplan/frontend/main/env*" -exec rm -rf {} +
+            docker system prune -a -f
           EOF
 
     env:
