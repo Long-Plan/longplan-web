@@ -2,11 +2,11 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { Toaster } from "react-hot-toast";
 import { useQuery } from "react-query";
 import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
+	Navigate,
+	Route,
+	Routes,
+	useLocation,
+	useNavigate,
 } from "react-router-dom";
 import useAccountContext from "./common/contexts/AccountContext";
 import { validateLocalToken } from "./core/auth";
@@ -19,75 +19,70 @@ import { useEffect } from "react";
 import Term from "./common/components/dialogues/contents/Term";
 import FixedLayer from "./common/components/layer/fixlayer";
 import DebugPanel from "./debug/DebugPanel";
-import PlanSettingPopup from "./common/components/dialogues/contents/settingpopup";
 import { config } from "./core/config";
 
 function App() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { setAccountData, accountData } = useAccountContext();
-  const { isVisible, setIsVisible, setComponent } = useAnnouncementContext();
+	const navigate = useNavigate();
+	const location = useLocation();
+	const { setAccountData, accountData } = useAccountContext();
+	const { isVisible, setIsVisible, setComponent } = useAnnouncementContext();
 
-  useEffect(() => {
-    if (accountData) {
-      if (!accountData.studentData?.is_term_accepted) {
-        setIsVisible(true);
-        setComponent(<Term />);
-      }
-      if (!accountData.studentData?.major_id) {
-        setIsVisible(true);
-        setComponent(<PlanSettingPopup mode={true} />);
-      }
-    }
-  }, [accountData, isVisible, setComponent, setIsVisible]);
+	useEffect(() => {
+		if (accountData) {
+			if (!accountData.studentData?.is_term_accepted) {
+				setIsVisible(true);
+				setComponent(<Term />);
+			}
+		}
+	}, [accountData, isVisible, setComponent, setIsVisible]);
 
-  const { status } = useQuery("init", initData, {
-    staleTime: Infinity,
-    onSuccess: (data) => {
-      if (data) {
-        setAccountData(data);
-      } else {
-        if (location.pathname !== ClientRouteKey.OAuth) {
-          navigate(ClientRouteKey.Login, { replace: true });
-        }
-      }
-    },
-  });
+	const { status } = useQuery("init", initData, {
+		staleTime: Infinity,
+		onSuccess: (data) => {
+			if (data) {
+				setAccountData(data);
+			} else {
+				if (location.pathname !== ClientRouteKey.OAuth) {
+					navigate(ClientRouteKey.Login, { replace: true });
+				}
+			}
+		},
+	});
 
-  async function initData() {
-    const [data] = await Promise.all([validateLocalToken()]);
+	async function initData() {
+		const [data] = await Promise.all([validateLocalToken()]);
 
-    return data;
-  }
+		return data;
+	}
 
-  return (
-    <>
-      <Toaster />
-      {isVisible && <Announcement />}
-      <FixedLayer>
-        <DebugPanel isDisplayed={!config.isProductionMode} routes={routes} />
-      </FixedLayer>
-      <ReactFlowProvider>
-        {status === "loading" ? null : status === "success" ? (
-          <Routes>
-            {routes.map(({ path, component: Component }) => (
-              <Route
-                key={path}
-                path={path}
-                element={
-                  <PageLayout>
-                    <Component />
-                  </PageLayout>
-                }
-              />
-            ))}
-          </Routes>
-        ) : (
-          <Navigate to={ClientRouteKey.Login} replace={true} />
-        )}
-      </ReactFlowProvider>
-    </>
-  );
+	return (
+		<>
+			<Toaster />
+			{isVisible && <Announcement />}
+			<FixedLayer>
+				<DebugPanel isDisplayed={!config.isProductionMode} routes={routes} />
+			</FixedLayer>
+			<ReactFlowProvider>
+				{status === "loading" ? null : status === "success" ? (
+					<Routes>
+						{routes.map(({ path, component: Component }) => (
+							<Route
+								key={path}
+								path={path}
+								element={
+									<PageLayout>
+										<Component />
+									</PageLayout>
+								}
+							/>
+						))}
+					</Routes>
+				) : (
+					<Navigate to={ClientRouteKey.Login} replace={true} />
+				)}
+			</ReactFlowProvider>
+		</>
+	);
 }
 
 export default App;

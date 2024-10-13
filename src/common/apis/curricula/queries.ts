@@ -4,27 +4,27 @@ import { Curriculum } from "../../../types/curricula";
 import { ApiRouteKey } from "../../constants/keys";
 
 export async function getAllByMajorID(
-  major_id: number
+	major_id: number
 ): Promise<TResponse<Curriculum>> {
-  return new Promise((resolve, reject) => {
-    coreApi
-      .get<TResponse<Curriculum>>(`${ApiRouteKey.CurriculaMajor}/${major_id}`)
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch(reject);
-  });
+	return new Promise((resolve, reject) => {
+		coreApi
+			.get(`${ApiRouteKey.CurriculaMajor}/${major_id}`)
+			.then((res) => {
+				resolve(res.data);
+			})
+			.catch(reject);
+	});
 }
 
 export async function getCurriculaByMajorID(
-  major_id: number
-): Promise<TResponse<Curriculum>> {
-  return new Promise((resolve, reject) => {
-    coreApi
-      .get<TResponse<Curriculum>>(`${ApiRouteKey.Curricula}/major/${major_id}`)
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch(reject);
-  });
+	major_id: number
+): Promise<TResponse<Curriculum[]>> {
+	return new Promise((resolve, reject) => {
+		coreApi
+			.get(`${ApiRouteKey.Curricula}/major/${major_id}`)
+			.then((res) => {
+				resolve(res.data);
+			})
+			.catch(reject);
+	});
 }
