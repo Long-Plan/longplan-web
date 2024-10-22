@@ -20,7 +20,7 @@ interface Props {
 }
 
 function Diagram({ courseDetailDisplays, categoryCurriculum }: Props) {
-	const [showSemester3, setShowSemester3] = useState(false); // Toggle state for semester 3
+	const [showSemester3, setShowSemester3] = useState(true); // Toggle state for semester 3
 	const [categoryTypeDisplays, setCategoryTypeDisplays] = useState<
 		CategoryTypeDisplay[]
 	>([]);
@@ -114,6 +114,7 @@ function Diagram({ courseDetailDisplays, categoryCurriculum }: Props) {
 				existedResult.courseGroup.push(courseGroup);
 			}
 		});
+
 		return result;
 	}, [courseDetails, categoryCurriculum]);
 
@@ -432,7 +433,7 @@ function Diagram({ courseDetailDisplays, categoryCurriculum }: Props) {
 																			return (
 																				<div
 																					key={courseGroup.course_no}
-																					className="inline-flex items-start justify-end rounded-[10px] border border-solid border-gray-300 w-[110px] h-[45px] mb-1.5"
+																					className="inline-flex items-start justify-end rounded-[10px] border border-solid border-gray-300 w-[105px] h-[45px] mb-1.5"
 																				>
 																					<SubjectBox
 																						primaryColor={
@@ -483,7 +484,7 @@ function Diagram({ courseDetailDisplays, categoryCurriculum }: Props) {
 																	return (
 																		<div
 																			key={year + 3 + courseGroup}
-																			className="inline-flex items-start justify-end rounded-[10px] border border-solid border-gray-300 w-[110px] h-[45px] mb-1.5"
+																			className="inline-flex items-start justify-end rounded-[10px] border border-solid border-gray-300 w-[105px] h-[45px] mb-1.5"
 																		></div>
 																	);
 																})}

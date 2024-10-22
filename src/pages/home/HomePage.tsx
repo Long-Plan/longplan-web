@@ -5,7 +5,6 @@ import useAccountContext from "../../common/contexts/AccountContext";
 import { useNavigate } from "react-router-dom";
 import { ClientRouteKey } from "../../common/constants/keys";
 import useEnrolledCourseContext from "../../common/contexts/EnrolledCourseContext";
-import { getEnrolledCourses } from "../../common/apis/enrolled_course/queries";
 import { getStudentCurriculaByStudent } from "../../common/apis/student_curriculum/queries";
 import { Category, EnrolledCourseCycle, StudentCurriculum } from "../../types";
 import StudentCurriculumDropdown from "./components/StudentCurriculumDropdown";
@@ -32,7 +31,6 @@ export type CourseDetailOfCategoryDisplay = {
 function HomePage() {
 	const { addDialogue } = useDialogueContext();
 	const { accountData } = useAccountContext();
-	const { setEnrolledCoruseData } = useEnrolledCourseContext();
 	const [selectedStudentCurriculum, setSelectedStudentCurriculum] =
 		useState<StudentCurriculum | null>(null);
 	const [studentCurricula, setStudentCurricula] = useState<StudentCurriculum[]>(
@@ -72,10 +70,9 @@ function HomePage() {
 					};
 					addDialogue(curriculumSetting);
 				} else {
-					getEnrolledCourses().then((data) => {
-						setEnrolledCoruseData(data.result ?? []);
-					});
-					getStudentCurriculaByStudent().then((studentCurriculaData) => {
+					getStudentCurriculaByStudent(
+						accountData.studentData.major_id ?? 0
+					).then((studentCurriculaData) => {
 						const studentCurricula = studentCurriculaData.result ?? [];
 						setStudentCurricula(studentCurricula);
 						const currentStudentCurriculum =

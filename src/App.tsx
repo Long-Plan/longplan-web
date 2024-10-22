@@ -21,11 +21,14 @@ import Dialogue from "./common/components/dialogues/Dialogue";
 import useDialogueContext, {
 	DialogueProps,
 } from "./common/contexts/DialogueContext";
+import { getEnrolledCourses } from "./common/apis/enrolled_course/queries";
+import useEnrolledCourseContext from "./common/contexts/EnrolledCourseContext";
 
 function App() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { setAccountData, accountData } = useAccountContext();
+	const { setEnrolledCoruseData } = useEnrolledCourseContext();
 	const { addDialogue } = useDialogueContext();
 
 	useEffect(() => {
@@ -45,6 +48,9 @@ function App() {
 		onSuccess: (data) => {
 			if (data) {
 				setAccountData(data);
+				getEnrolledCourses().then((data) => {
+					setEnrolledCoruseData(data.result ?? []);
+				});
 			} else {
 				if (location.pathname !== ClientRouteKey.OAuth) {
 					navigate(ClientRouteKey.Login, { replace: true });
