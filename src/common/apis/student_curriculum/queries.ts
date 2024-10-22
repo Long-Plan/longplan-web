@@ -15,12 +15,12 @@ export function getStudentCurriculaByID(
 	});
 }
 
-export function getStudentCurriculaByStudent(): Promise<
-	TResponse<StudentCurriculum[]>
-> {
+export function getStudentCurriculaByStudent(
+	majorId: number
+): Promise<TResponse<StudentCurriculum[]>> {
 	return new Promise((resolve, reject) => {
 		coreApi
-			.get(`${ApiRouteKey.StudentCurriculaByStudent}`)
+			.get(`${ApiRouteKey.StudentCurriculaByStudent}/${majorId}`)
 			.then((res) => {
 				resolve(res.data);
 			})
