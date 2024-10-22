@@ -8,16 +8,16 @@ export function signInQuery(code: string): Promise<TResponse<string>> {
       .post(
         ApiRouteKey.SignIn,
         null,
-        IS_PRODUCTION_MODE
+        IS_LOCAL_DEVELOPMENT
           ? {
               params: new URLSearchParams({
                 code,
+                local: "true",
               }),
             }
           : {
               params: new URLSearchParams({
                 code,
-                local: "true",
               }),
             }
       )
