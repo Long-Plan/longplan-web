@@ -14,6 +14,7 @@ import { getCurriculumByID } from "../../../common/apis/curricula/queries";
 import { PrimaryButton } from "../../../common/components/buttons/PrimaryButton";
 import { putStudentCurriculaQuestion } from "../../../common/apis/student_curriculum/manipulates";
 import toast from "react-hot-toast";
+import useAccountContext from "../../../common/contexts/AccountContext";
 
 interface Props {
 	studentCurricula: StudentCurriculum[];
@@ -32,6 +33,7 @@ function StudentCurriculumDropdown({
 		{ id?: number; question_id: number; choice_id?: number }[]
 	>([]);
 	const [isPopupOpenned, setIsPopupOpenned] = useState(false);
+	const { accountData } = useAccountContext();
 	useEffect(() => {
 		if (selectedStudentCurriculum) {
 			getCurriculumByID(selectedStudentCurriculum.curriculum_id).then((res) => {
@@ -216,10 +218,16 @@ function StudentCurriculumDropdown({
 					{({ open }) => (
 						<>
 							<ListboxButton className="relative flex items-center h-10 w-[300px] pl-3 pr-12 text-left cursor-pointer rounded-3xl bg-white border-2 border-blue-shadeb5 text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-								<div className="flex items-center">
+								<div className="flex items-center justify-between w-full">
 									<span className="ml-3 font-bold text-blue-shadeb5 truncate">
 										{selectedStudentCurriculum?.name ?? "Select an option"}
 									</span>
+									{accountData?.studentData?.student_curriculum_id ===
+										selectedStudentCurriculum?.id && (
+										<div className="border rounded-full text-sm text-gray-300 px-2">
+											Default
+										</div>
+									)}
 								</div>
 								<span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
 									<ChevronUpDownIcon
@@ -249,7 +257,7 @@ function StudentCurriculumDropdown({
 											>
 												{({ selected, active }) => (
 													<>
-														<div className="flex items-center">
+														<div className="flex items-center w-full justify-between">
 															<span
 																className={clsx(
 																	selected
@@ -260,6 +268,13 @@ function StudentCurriculumDropdown({
 															>
 																{studentCurriculum.name}
 															</span>
+															{accountData?.studentData
+																?.student_curriculum_id ===
+																studentCurriculum?.id && (
+																<div className="border rounded-full text-sm text-gray-300 px-2">
+																	Default
+																</div>
+															)}
 														</div>
 														{selected && (
 															<span
