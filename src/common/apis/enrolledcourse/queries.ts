@@ -6,7 +6,7 @@ export async function getEnrolledCourses(): Promise<MappingEnrolledCourse[]> {
 	{
 		return new Promise((resolve, reject) => {
 			coreApi
-				.get(`${ApiRouteKey.EnrolledCourses}`)
+				.get(`${ApiRouteKey.EnrolledCourse}`)
 				.then((res) => {
 					if (res.data.result) {
 						resolve(res.data.result);
