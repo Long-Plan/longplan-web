@@ -1,13 +1,13 @@
 import { coreApi } from "../../../core/connections";
-import { TResponse, CourseDetail } from "../../../types";
+import { EnrolledCourseCycle, TResponse } from "../../../types";
 import { ApiRouteKey } from "../../constants/keys";
 
-export function getCourseDetailsByCourseNo(
-	course_no: string
-): Promise<TResponse<CourseDetail>> {
+export function getEnrolledCourses(): Promise<
+	TResponse<EnrolledCourseCycle[]>
+> {
 	return new Promise((resolve, reject) => {
 		coreApi
-			.get(`${ApiRouteKey.CourseDetail}/${course_no}`)
+			.get(`${ApiRouteKey.EnrolledCourse}`)
 			.then((res) => {
 				resolve(res.data);
 			})

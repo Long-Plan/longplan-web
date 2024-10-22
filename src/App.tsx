@@ -13,28 +13,32 @@ import { validateLocalToken } from "./core/auth";
 import { ClientRouteKey } from "./common/constants/keys";
 import routes from "./core/routes";
 import PageLayout from "./common/components/layouts/PageLayout";
-import Announcement from "./common/components/dialogues/Announcement";
-import useAnnouncementContext from "./common/contexts/AnnouncementContext";
 import { useEffect } from "react";
 import Term from "./common/components/dialogues/contents/Term";
 import FixedLayer from "./common/components/layer/fixlayer";
 import DebugPanel from "./debug/DebugPanel";
-import { config } from "./core/config";
+import Dialogue from "./common/components/dialogues/Dialogue";
+import useDialogueContext, {
+	DialogueProps,
+} from "./common/contexts/DialogueContext";
 
 function App() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { setAccountData, accountData } = useAccountContext();
-	const { isVisible, setIsVisible, setComponent } = useAnnouncementContext();
+	const { addDialogue } = useDialogueContext();
 
 	useEffect(() => {
 		if (accountData) {
 			if (!accountData.studentData?.is_term_accepted) {
-				setIsVisible(true);
-				setComponent(<Term />);
+				const termDialogue: DialogueProps = {
+					children: <Term />,
+					priority: -999,
+				};
+				addDialogue(termDialogue);
 			}
 		}
-	}, [accountData, isVisible, setComponent, setIsVisible]);
+	}, [accountData, addDialogue]);
 
 	const { status } = useQuery("init", initData, {
 		staleTime: Infinity,
@@ -58,9 +62,9 @@ function App() {
 	return (
 		<>
 			<Toaster />
-			{isVisible && <Announcement />}
+			<Dialogue />
 			<FixedLayer>
-				<DebugPanel isDisplayed={!config.isProductionMode} routes={routes} />
+				<DebugPanel isDisplayed={true} routes={routes} />
 			</FixedLayer>
 			<ReactFlowProvider>
 				{status === "loading" ? null : status === "success" ? (

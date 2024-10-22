@@ -1,14 +1,13 @@
 import { coreApi } from "../../../core/connections";
-import { TResponse } from "../../../types";
-import { Curriculum } from "../../../types/curricula";
+import { Curriculum, TResponse } from "../../../types";
 import { ApiRouteKey } from "../../constants/keys";
 
-export async function getAllByMajorID(
-	major_id: number
-): Promise<TResponse<Curriculum>> {
+export function getCurriculaByMajorID(
+	majorID: number
+): Promise<TResponse<Curriculum[]>> {
 	return new Promise((resolve, reject) => {
 		coreApi
-			.get(`${ApiRouteKey.CurriculaMajor}/${major_id}`)
+			.get(`${ApiRouteKey.CurriculaByMajorID}/${majorID}`)
 			.then((res) => {
 				resolve(res.data);
 			})
@@ -16,12 +15,12 @@ export async function getAllByMajorID(
 	});
 }
 
-export async function getCurriculaByMajorID(
-	major_id: number
-): Promise<TResponse<Curriculum[]>> {
+export function getCurriculumByID(
+	curriculumID: number
+): Promise<TResponse<Curriculum>> {
 	return new Promise((resolve, reject) => {
 		coreApi
-			.get(`${ApiRouteKey.Curricula}/major/${major_id}`)
+			.get(`${ApiRouteKey.Curriculum}/${curriculumID}`)
 			.then((res) => {
 				resolve(res.data);
 			})
