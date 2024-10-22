@@ -1,10 +1,9 @@
 export type StudentCurriculum = {
-	id?: number;
+	id: number;
 	name: string;
 	student_code: number;
 	curriculum_id: number;
 	is_system: boolean;
-	is_default: boolean;
 
 	courses?: StudentCurriculumCourse[];
 	answers: StudentCurriculumQuestionAnswer[];
@@ -15,7 +14,6 @@ export type StudentCurriculumCreate = {
 	student_code: number;
 	curriculum_id: number;
 	is_system: boolean;
-	is_default: boolean;
 
 	answers: StudentCurriculumQuestionAnswer[];
 };
