@@ -427,6 +427,15 @@ const CourseInfo = ({ enrolledCourses, studentCurriculum }: Props) => {
 																	categoryData
 																)?.primary_color
 															}`,
+															color: `${
+																getDetailOfCategory(
+																	getCategoryDetailOfCourse(
+																		enrolledCourse.course_no,
+																		categoryData
+																	)?.categoryDisplayID ?? 0,
+																	categoryData
+																)?.primary_color
+															}`,
 														}}
 														className="inline-block pl-2 w-[120px] text-left text-sm font-medium rounded-r-[10px] border border-solid truncate"
 													>
@@ -441,49 +450,6 @@ const CourseInfo = ({ enrolledCourses, studentCurriculum }: Props) => {
 														}
 													</div>
 												</>
-												{/* {(() => {
-												const courseGroup = getLookupForCourse(
-													enrolledCourse.course_no
-												);
-												if (
-													courseGroup === "Core" ||
-													courseGroup === "Major Required" ||
-													courseGroup === "Major Elective"
-												) {
-													return (
-														<>
-															<div className="inline-block px-2 text-sm w-[50px] font-medium text-white bg-blue-shadeb4 rounded-l-[10px] border border-solid border-blue-shadeb4">
-																Major
-															</div>
-															<div className="inline-block pl-2 w-[100px] text-left text-sm font-medium bg-blue-shadeb1 rounded-r-[10px] text-blue-shadeb5 border border-solid border-blue-shadeb5">
-																{courseGroup.replace("Major ", "")}
-															</div>
-														</>
-													);
-												}
-												if (
-													courseGroup === "Learner Person" ||
-													courseGroup === "Innovative Co-creator" ||
-													courseGroup === "Active Citizen" ||
-													courseGroup === "GE Elective"
-												) {
-													return (
-														<>
-															<div className="inline-block px-2 text-sm w-[40px] font-medium text-yellow-700 bg-yellow-400 rounded-l-[10px] border border-solid border-yellow-300">
-																GE
-															</div>
-															<div className="inline-block px-2 w-max text-left text-sm font-medium bg-yellow-50 rounded-r-[10px] text-yellow-700 border border-solid border-yellow-300">
-																{courseGroup}
-															</div>
-														</>
-													);
-												}
-												return (
-													<div className="inline-block px-2 text-sm w-[150px] font-medium text-black bg-gray-200 rounded-[10px] border border-solid border-gray-400">
-														{courseGroup}
-													</div>
-												);
-											})()} */}
 											</td>
 										</tr>
 									))}

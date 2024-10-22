@@ -75,5 +75,7 @@ export const getCategoryTypeDisplay = (
 			getCategoryTypeDisplayHelper(childCategory, categoryTypeDisplays, null);
 		});
 	}
-	return categoryTypeDisplays;
+	return categoryTypeDisplays.sort((a, b) => {
+		return a.category.id - b.category.id;
+	});
 };
