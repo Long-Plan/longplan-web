@@ -35,3 +35,16 @@ export function putStudentCurriculaQuestion(data: {
 			.catch(reject);
 	});
 }
+
+export function deleteStudentCurriculum(
+	student_curriculum_id: number
+): Promise<TResponse<undefined>> {
+	return new Promise((resolve, reject) => {
+		coreApi
+			.delete(`${ApiRouteKey.StudentCurricula}/${student_curriculum_id}`)
+			.then((res) => {
+				resolve(res.data);
+			})
+			.catch(reject);
+	});
+}
