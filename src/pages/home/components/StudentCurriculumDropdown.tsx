@@ -38,7 +38,7 @@ function StudentCurriculumDropdown({
 		if (selectedStudentCurriculum) {
 			getCurriculumByID(selectedStudentCurriculum.curriculum_id).then((res) => {
 				setSelectedCurriculum(res.result ?? null);
-				if (res.result) {
+				if (res.result && res.result?.curriculum_questions) {
 					setCurriculumAnswers(
 						res.result?.curriculum_questions.map((question) => ({
 							id: selectedStudentCurriculum.answers.find(
@@ -103,7 +103,7 @@ function StudentCurriculumDropdown({
 								เลือกรูปแบบหลักสูตรที่คุณต้องการ
 							</p>
 							<div className="space-y-4 px-12 text-left">
-								{selectedCurriculum &&
+								{selectedCurriculum?.curriculum_questions &&
 									selectedCurriculum.curriculum_questions.length > 0 &&
 									selectedCurriculum.curriculum_questions.map((question) => (
 										<div key={question.id}>
@@ -301,10 +301,13 @@ function StudentCurriculumDropdown({
 						</>
 					)}
 				</Listbox>
-				<Cog8ToothIcon
-					className="w-10 border-2 border-[#4351CC] rounded-full p-1 text-[#4351CC] cursor-pointer"
-					onClick={handleSetting}
-				/>
+				{selectedCurriculum?.curriculum_questions &&
+					selectedCurriculum?.curriculum_questions.length > 0 && (
+						<Cog8ToothIcon
+							className="w-10 border-2 border-[#4351CC] rounded-full p-1 text-[#4351CC] cursor-pointer"
+							onClick={handleSetting}
+						/>
+					)}
 			</div>
 		</>
 	);

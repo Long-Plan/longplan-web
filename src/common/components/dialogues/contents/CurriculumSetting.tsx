@@ -52,12 +52,14 @@ function CurriculumSetting() {
 
 	const handlerSelectedCurriculum = (curriculum: Curriculum) => {
 		setSelectedCurriculum(curriculum);
-		setCurriculumAnswers(
-			curriculum.curriculum_questions.map((question) => ({
-				question_id: question.id,
-				choice_id: undefined,
-			}))
-		);
+		if (!curriculum.curriculum_questions) setCurriculumAnswers([]);
+		else
+			setCurriculumAnswers(
+				curriculum.curriculum_questions.map((question) => ({
+					question_id: question.id,
+					choice_id: undefined,
+				}))
+			);
 	};
 
 	const handlerSelectedCurriculumAnswer = (
@@ -254,7 +256,7 @@ function CurriculumSetting() {
 							</Listbox>
 						</div>
 					)}
-					{selectedCurriculum &&
+					{selectedCurriculum?.curriculum_questions &&
 						selectedCurriculum.curriculum_questions.length > 0 &&
 						selectedCurriculum.curriculum_questions.map((question) => (
 							<div key={question.id}>
