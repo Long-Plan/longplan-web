@@ -15,8 +15,6 @@ import {
 	getCategoryDetailOfCourseNotFE,
 } from "../../common/components/utils/categoryProcess";
 import Diagram from "./components/Diagram";
-import { PageContainer } from "../../common/components/container/PageContainer";
-import ContainerWithoutHeader from "../../common/components/container/WithoutHeaderContainer";
 
 export type CourseDetailOfCategoryDisplay = {
 	course_no: string;
@@ -184,7 +182,7 @@ function HomePage() {
 	}
 
 	return (
-		<PageContainer>
+		<div className="w-screen overflow-y-auto p-8">
 			<div className="w-full items-center justify-center">
 				<StudentCurriculumDropdown
 					studentCurricula={studentCurricula}
@@ -192,13 +190,13 @@ function HomePage() {
 					setSelectedStudentCurriculum={setSelectedStudentCurriculum}
 				/>
 			</div>
-			<div className="w-full pt-4 pr-8 pl-[85px] flex gap-4">
-				<ContainerWithoutHeader>
+			<div className="w-full pt-4 flex gap-4 pl-16">
+				<div className="p-4 md:p-8 w-full overflow-y-auto bg-white rounded-3xl mx-auto">
 					<Diagram
 						courseDetailDisplays={courseDetailDisplays}
 						categoryCurriculum={selectedCategoryCurriculum}
 					/>
-				</ContainerWithoutHeader>
+				</div>
 				<div className="w-[400px] bg-white rounded-3xl drop-shadow-sm">
 					<SummaryCredit
 						courseDetailDisplays={courseDetailDisplays}
@@ -206,7 +204,7 @@ function HomePage() {
 					/>
 				</div>
 			</div>
-		</PageContainer>
+		</div>
 	);
 }
 

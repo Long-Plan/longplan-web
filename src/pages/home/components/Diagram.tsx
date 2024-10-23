@@ -176,7 +176,7 @@ function Diagram({ courseDetailDisplays, categoryCurriculum }: Props) {
 
 	return (
 		<div className="flex justify-center">
-			<div className="bg-white rounded-[20px] w-full pb-12 cursor-default">
+			<div className="bg-white rounded-[20px] w-full cursor-default">
 				<div className="flex justify-end pb-2 m-2 top-0 right-0 h-[30px]">
 					<div className={`flex flex-cols justify-center items-center`}>
 						<div className="flex border-[2px] border-solid border-blue-shadeb5 w-[30px] h-[10px] rounded-[20px] bg-blue-shadeb1 mr-2" />
