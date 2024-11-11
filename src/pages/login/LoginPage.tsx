@@ -45,12 +45,7 @@ function LoginPage() {
         </div>
         <Container>
           <div className="flex flex-col items-center ml-10">
-            <a
-              className="flex relative justify-center items-center"
-              href="https://sites.google.com/view/longplan/home?authuser=0"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a className="flex relative justify-center items-center">
               <img src="/imgs/login_logo.png" alt="" className="w-3/5" />
             </a>
             <div className="mt-8">ลงชื่อเข้าสู่ระบบ</div>
